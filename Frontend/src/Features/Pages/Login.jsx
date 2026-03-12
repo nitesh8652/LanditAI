@@ -1,6 +1,9 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, use } from "react";
 import { Eye, EyeOff, Github, Lock, Mail, ArrowRight, Chrome, Zap, User } from "lucide-react";
 import { useSearchParams } from "react-router";
+import { useAuth } from "../Hooks/Hooks";
+import Loader from "../Components/Loader";
+import { useNavigate } from "react-router";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -10,6 +13,9 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [successMsg, setSuccessMsg] = useState("");
+
+  const { loading, loginHandler, registerHandler } = useAuth()
+  const navigate = useNavigate()
 
   // Controlled form state
   const [formData, setFormData] = useState({
@@ -51,6 +57,16 @@ export default function LoginPage() {
   // Form submit handler
   const handleSubmit = async (e) => {
     e.preventDefault(); // ← prevents page reload
+    if (activeTab === "login") {
+      await loginHandler({ email: formData.email, password: formData.password })
+    } else {
+      await registerHandler({ username: formData.name, email: formData.email, password: formData.password })
+    }
+
+    navigate("/ResumeBuilder")
+
+
+
 
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
@@ -140,14 +156,28 @@ export default function LoginPage() {
 
   const [searchParams] = useSearchParams();
 
-  useEffect(()=>{
+  useEffect(() => {
     const tab = searchParams.get("tab");
-    if(tab==="signup"){
+    if (tab === "signup") {
       setActiveTab("signup")
-    }else{
+    } else {
       setActiveTab("login")
     }
-  },[searchParams])
+  }, [searchParams])
+
+  if (loading) {
+    return (
+      <div style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#0d0c0b"
+      }}>
+        <Loader />
+      </div>
+    )
+  }
 
   return (
     <div style={{ minHeight: "100vh", background: "#0d0c0b", display: "flex", flexDirection: "column", fontFamily: "'DM Sans', sans-serif", position: "relative", overflow: "hidden" }}>
@@ -333,187 +363,187 @@ export default function LoginPage() {
 
             {/* Form — onSubmit with e.preventDefault inside handleSubmit */}
             <form id={activeTab === "login" ? "login-form" : "signup-form"} onSubmit={handleSubmit} noValidate>
-            <div style={{ padding: "24px" }}>
+              <div style={{ padding: "24px" }}>
 
-              {/* General error */}
-              {errors.general && (
-                <div style={{ background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.3)", borderRadius: 10, padding: "10px 14px", marginBottom: 16, fontSize: "0.8rem", color: "#fca5a5" }}>
-                  {errors.general}
+                {/* General error */}
+                {errors.general && (
+                  <div style={{ background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.3)", borderRadius: 10, padding: "10px 14px", marginBottom: 16, fontSize: "0.8rem", color: "#fca5a5" }}>
+                    {errors.general}
+                  </div>
+                )}
+
+                {/* Success message */}
+                {successMsg && (
+                  <div style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 10, padding: "10px 14px", marginBottom: 16, fontSize: "0.8rem", color: "#86efac" }}>
+                    {successMsg}
+                  </div>
+                )}
+
+                {/* Social buttons */}
+                <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+                  <button type="button" className="social-btn">
+                    <Github size={15} /> GitHub
+                  </button>
+                  <button type="button" className="social-btn">
+                    <Chrome size={15} /> Google
+                  </button>
                 </div>
-              )}
 
-              {/* Success message */}
-              {successMsg && (
-                <div style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 10, padding: "10px 14px", marginBottom: 16, fontSize: "0.8rem", color: "#86efac" }}>
-                  {successMsg}
+                {/* Divider */}
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+                  <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.07)" }} />
+                  <span style={{ fontSize: "0.72rem", letterSpacing: "0.1em", color: "rgba(245,240,232,0.3)", textTransform: "uppercase" }}>or</span>
+                  <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.07)" }} />
                 </div>
-              )}
 
-              {/* Social buttons */}
-              <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
-                <button type="button" className="social-btn">
-                  <Github size={15} /> GitHub
-                </button>
-                <button type="button" className="social-btn">
-                  <Chrome size={15} /> Google
-                </button>
-              </div>
+                {/* Fields */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
 
-              {/* Divider */}
-              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-                <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.07)" }} />
-                <span style={{ fontSize: "0.72rem", letterSpacing: "0.1em", color: "rgba(245,240,232,0.3)", textTransform: "uppercase" }}>or</span>
-                <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.07)" }} />
-              </div>
+                  {/* ── Name (signup only) ── */}
+                  {activeTab === "signup" && (
+                    <div>
+                      {/* htmlFor links label to input by matching id */}
+                      <label htmlFor="name" style={{ display: "block", fontSize: "0.78rem", fontWeight: 500, color: "rgba(245,240,232,0.6)", marginBottom: 6, letterSpacing: "0.03em" }}>
+                        Full Name
+                      </label>
+                      <div style={{ position: "relative" }}>
+                        <User size={15} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "rgba(245,240,232,0.35)" }} />
+                        <input
+                          id="name"               // ← id used by handleChange & htmlFor
+                          name="name"             // ← name for form serialization
+                          type="text"
+                          autoComplete="name"
+                          placeholder="John Doe"
+                          value={formData.name}
+                          onChange={handleChange}
+                          required
+                          className="input-field"
+                          style={errors.name ? { borderColor: "rgba(220,38,38,0.5)" } : {}}
+                        />
+                      </div>
+                      {errors.name && <p style={{ marginTop: 4, fontSize: "0.72rem", color: "#fca5a5" }}>{errors.name}</p>}
+                    </div>
+                  )}
 
-              {/* Fields */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-
-                {/* ── Name (signup only) ── */}
-                {activeTab === "signup" && (
+                  {/* ── Email ── */}
                   <div>
-                    {/* htmlFor links label to input by matching id */}
-                    <label htmlFor="name" style={{ display: "block", fontSize: "0.78rem", fontWeight: 500, color: "rgba(245,240,232,0.6)", marginBottom: 6, letterSpacing: "0.03em" }}>
-                      Full Name
+                    <label htmlFor="email" style={{ display: "block", fontSize: "0.78rem", fontWeight: 500, color: "rgba(245,240,232,0.6)", marginBottom: 6, letterSpacing: "0.03em" }}>
+                      Email Address
                     </label>
                     <div style={{ position: "relative" }}>
-                      <User size={15} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "rgba(245,240,232,0.35)" }} />
+                      <Mail size={15} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "rgba(245,240,232,0.35)" }} />
                       <input
-                        id="name"               // ← id used by handleChange & htmlFor
-                        name="name"             // ← name for form serialization
-                        type="text"
-                        autoComplete="name"
-                        placeholder="John Doe"
-                        value={formData.name}
+                        id="email"               // ← id
+                        name="email"
+                        type="email"             // ← correct input type
+                        autoComplete="email"
+                        placeholder="you@example.com"
+                        value={formData.email}
                         onChange={handleChange}
                         required
                         className="input-field"
-                        style={errors.name ? { borderColor: "rgba(220,38,38,0.5)" } : {}}
+                        style={errors.email ? { borderColor: "rgba(220,38,38,0.5)" } : {}}
                       />
                     </div>
-                    {errors.name && <p style={{ marginTop: 4, fontSize: "0.72rem", color: "#fca5a5" }}>{errors.name}</p>}
+                    {errors.email && <p style={{ marginTop: 4, fontSize: "0.72rem", color: "#fca5a5" }}>{errors.email}</p>}
                   </div>
-                )}
 
-                {/* ── Email ── */}
-                <div>
-                  <label htmlFor="email" style={{ display: "block", fontSize: "0.78rem", fontWeight: 500, color: "rgba(245,240,232,0.6)", marginBottom: 6, letterSpacing: "0.03em" }}>
-                    Email Address
-                  </label>
-                  <div style={{ position: "relative" }}>
-                    <Mail size={15} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "rgba(245,240,232,0.35)" }} />
-                    <input
-                      id="email"               // ← id
-                      name="email"
-                      type="email"             // ← correct input type
-                      autoComplete="email"
-                      placeholder="you@example.com"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className="input-field"
-                      style={errors.email ? { borderColor: "rgba(220,38,38,0.5)" } : {}}
-                    />
-                  </div>
-                  {errors.email && <p style={{ marginTop: 4, fontSize: "0.72rem", color: "#fca5a5" }}>{errors.email}</p>}
-                </div>
-
-                {/* ── Password ── */}
-                <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                    <label htmlFor="password" style={{ fontSize: "0.78rem", fontWeight: 500, color: "rgba(245,240,232,0.6)", letterSpacing: "0.03em" }}>
-                      Password
-                    </label>
-                    {activeTab === "login" && (
-                      <a href="/forgot-password" style={{ fontSize: "0.75rem", color: "#EC4E02", textDecoration: "none", opacity: 0.85 }}>Forgot password?</a>
-                    )}
-                  </div>
-                  <div style={{ position: "relative" }}>
-                    <Lock size={15} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "rgba(245,240,232,0.35)" }} />
-                    <input
-                      id="password"            // ← id
-                      name="password"
-                      type={showPassword ? "text" : "password"}  // ← toggles between text/password
-                      autoComplete={activeTab === "login" ? "current-password" : "new-password"}
-                      placeholder="••••••••"
-                      value={formData.password}
-                      onChange={handleChange}
-                      required
-                      minLength={6}
-                      className="input-field"
-                      style={{ paddingRight: 40, ...(errors.password ? { borderColor: "rgba(220,38,38,0.5)" } : {}) }}
-                    />
-                    <button
-                      type="button"            // ← type="button" prevents form submission
-                      aria-label={showPassword ? "Hide password" : "Show password"}
-                      onClick={() => setShowPassword(!showPassword)}
-                      style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "transparent", border: "none", color: "rgba(245,240,232,0.4)", cursor: "pointer", padding: 4 }}
-                    >
-                      {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                    </button>
-                  </div>
-                  {errors.password && <p style={{ marginTop: 4, fontSize: "0.72rem", color: "#fca5a5" }}>{errors.password}</p>}
-                </div>
-
-                {/* ── Remember me (login only) ── */}
-                {activeTab === "login" && (
-                  <label htmlFor="rememberMe" style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
-                    <input
-                      id="rememberMe"
-                      name="rememberMe"
-                      type="checkbox"
-                      checked={rememberMe}
-                      onChange={(e) => setRememberMe(e.target.checked)}
-                      style={{ width: 15, height: 15, accentColor: "#EC4E02" }}
-                    />
-                    <span style={{ fontSize: "0.8rem", color: "rgba(245,240,232,0.45)" }}>Remember me for 30 days</span>
-                  </label>
-                )}
-
-                {/* ── Terms (signup only) ── */}
-                {activeTab === "signup" && (
+                  {/* ── Password ── */}
                   <div>
-                    <label htmlFor="agreeTerms" style={{ display: "flex", alignItems: "flex-start", gap: 8, cursor: "pointer" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                      <label htmlFor="password" style={{ fontSize: "0.78rem", fontWeight: 500, color: "rgba(245,240,232,0.6)", letterSpacing: "0.03em" }}>
+                        Password
+                      </label>
+                      {activeTab === "login" && (
+                        <a href="/forgot-password" style={{ fontSize: "0.75rem", color: "#EC4E02", textDecoration: "none", opacity: 0.85 }}>Forgot password?</a>
+                      )}
+                    </div>
+                    <div style={{ position: "relative" }}>
+                      <Lock size={15} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "rgba(245,240,232,0.35)" }} />
                       <input
-                        id="agreeTerms"
-                        name="agreeTerms"
-                        type="checkbox"
-                        checked={agreeTerms}
-                        onChange={(e) => { setAgreeTerms(e.target.checked); setErrors((p) => ({ ...p, terms: "" })); }}
-                        style={{ width: 15, height: 15, accentColor: "#EC4E02", marginTop: 2 }}
+                        id="password"            // ← id
+                        name="password"
+                        type={showPassword ? "text" : "password"}  // ← toggles between text/password
+                        autoComplete={activeTab === "login" ? "current-password" : "new-password"}
+                        placeholder="••••••••"
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                        minLength={6}
+                        className="input-field"
+                        style={{ paddingRight: 40, ...(errors.password ? { borderColor: "rgba(220,38,38,0.5)" } : {}) }}
                       />
-                      <span style={{ fontSize: "0.78rem", color: "rgba(245,240,232,0.4)", lineHeight: 1.5 }}>
-                        I agree to the <a href="/terms" style={{ color: "#EC4E02", textDecoration: "none" }}>Terms of Service</a> and <a href="/privacy" style={{ color: "#EC4E02", textDecoration: "none" }}>Privacy Policy</a>
-                      </span>
-                    </label>
-                    {errors.terms && <p style={{ marginTop: 4, fontSize: "0.72rem", color: "#fca5a5" }}>{errors.terms}</p>}
+                      <button
+                        type="button"            // ← type="button" prevents form submission
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                        onClick={() => setShowPassword(!showPassword)}
+                        style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "transparent", border: "none", color: "rgba(245,240,232,0.4)", cursor: "pointer", padding: 4 }}
+                      >
+                        {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                      </button>
+                    </div>
+                    {errors.password && <p style={{ marginTop: 4, fontSize: "0.72rem", color: "#fca5a5" }}>{errors.password}</p>}
                   </div>
-                )}
 
-                {/* ── Submit button ── type="submit" triggers handleSubmit → e.preventDefault */}
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="submit-btn"
-                  style={{ opacity: isLoading ? 0.7 : 1, cursor: isLoading ? "not-allowed" : "pointer" }}
-                >
-                  {isLoading ? "Please wait..." : activeTab === "login" ? "Sign In" : "Create Account"}
-                  {!isLoading && <ArrowRight size={16} />}
-                </button>
+                  {/* ── Remember me (login only) ── */}
+                  {activeTab === "login" && (
+                    <label htmlFor="rememberMe" style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+                      <input
+                        id="rememberMe"
+                        name="rememberMe"
+                        type="checkbox"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        style={{ width: 15, height: 15, accentColor: "#EC4E02" }}
+                      />
+                      <span style={{ fontSize: "0.8rem", color: "rgba(245,240,232,0.45)" }}>Remember me for 30 days</span>
+                    </label>
+                  )}
+
+                  {/* ── Terms (signup only) ── */}
+                  {activeTab === "signup" && (
+                    <div>
+                      <label htmlFor="agreeTerms" style={{ display: "flex", alignItems: "flex-start", gap: 8, cursor: "pointer" }}>
+                        <input
+                          id="agreeTerms"
+                          name="agreeTerms"
+                          type="checkbox"
+                          checked={agreeTerms}
+                          onChange={(e) => { setAgreeTerms(e.target.checked); setErrors((p) => ({ ...p, terms: "" })); }}
+                          style={{ width: 15, height: 15, accentColor: "#EC4E02", marginTop: 2 }}
+                        />
+                        <span style={{ fontSize: "0.78rem", color: "rgba(245,240,232,0.4)", lineHeight: 1.5 }}>
+                          I agree to the <a href="/terms" style={{ color: "#EC4E02", textDecoration: "none" }}>Terms of Service</a> and <a href="/privacy" style={{ color: "#EC4E02", textDecoration: "none" }}>Privacy Policy</a>
+                        </span>
+                      </label>
+                      {errors.terms && <p style={{ marginTop: 4, fontSize: "0.72rem", color: "#fca5a5" }}>{errors.terms}</p>}
+                    </div>
+                  )}
+
+                  {/* ── Submit button ── type="submit" triggers handleSubmit → e.preventDefault */}
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="submit-btn"
+                    style={{ opacity: isLoading ? 0.7 : 1, cursor: isLoading ? "not-allowed" : "pointer" }}
+                  >
+                    {isLoading ? "Please wait..." : activeTab === "login" ? "Sign In" : "Create Account"}
+                    {!isLoading && <ArrowRight size={16} />}
+                  </button>
+                </div>
+
+                {/* Footer link */}
+                <p style={{ textAlign: "center", marginTop: 20, fontSize: "0.8rem", color: "rgba(245,240,232,0.38)" }}>
+                  {activeTab === "login" ? "Don't have an account? " : "Already have an account? "}
+                  <button
+                    type="button"
+                    onClick={() => switchTab(activeTab === "login" ? "signup" : "login")}
+                    style={{ background: "transparent", border: "none", color: "#EC4E02", cursor: "pointer", fontSize: "0.8rem", fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}
+                  >
+                    {activeTab === "login" ? "Create one" : "Sign in"}
+                  </button>
+                </p>
               </div>
-
-              {/* Footer link */}
-              <p style={{ textAlign: "center", marginTop: 20, fontSize: "0.8rem", color: "rgba(245,240,232,0.38)" }}>
-                {activeTab === "login" ? "Don't have an account? " : "Already have an account? "}
-                <button
-                  type="button"
-                  onClick={() => switchTab(activeTab === "login" ? "signup" : "login")}
-                  style={{ background: "transparent", border: "none", color: "#EC4E02", cursor: "pointer", fontSize: "0.8rem", fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}
-                >
-                  {activeTab === "login" ? "Create one" : "Sign in"}
-                </button>
-              </p>
-            </div>
             </form>
           </div>
 
