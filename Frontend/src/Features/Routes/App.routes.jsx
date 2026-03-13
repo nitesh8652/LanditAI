@@ -1,9 +1,13 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter } from "react-router-dom";
 import Login from "../Pages/Login.jsx";
 import Register from "../Pages/Register.jsx";
 import ResumeBuilder from "../Pages/ResumeBuilder.jsx";
 import Protected from "../Components/Middleware/Protected.jsx";
 
+
+/**
+ @description helps to render components
+ */
 export const router = createBrowserRouter([
     {
         path: "/login",
@@ -15,9 +19,13 @@ export const router = createBrowserRouter([
         element: <Register />
 
     },
+
+    //<Protected> is the middleware where it checks if the user is logged in or not
     {
-        path:"/features",
+        path: "/features",
         element:
-        (<protected><ResumeBuilder /></protected>)
+            <Protected>
+                <ResumeBuilder />
+            </Protected>
     }
 ])

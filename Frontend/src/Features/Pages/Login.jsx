@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect, use } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Eye, EyeOff, Github, Lock, Mail, ArrowRight, Chrome, Zap, User } from "lucide-react";
 import { useSearchParams } from "react-router";
 import { useAuth } from "../Hooks/Hooks";
 import Loader from "../Components/Loader";
 import { useNavigate } from "react-router";
+
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,22 +18,25 @@ export default function LoginPage() {
   const { loading, loginHandler, registerHandler } = useAuth()
   const navigate = useNavigate()
 
-  // Controlled form state
+  // stores input data
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
   });
 
-  // Generic change handler — works for all inputs by their id
+  // input handle changer Update form values when the user types.
   const handleChange = (e) => {
     const { id, value } = e.target;
+    // prev → previous state
+    // ...prev → keep existing fields
+    // [id] → update the changed field
     setFormData((prev) => ({ ...prev, [id]: value }));
     // Clear error on change
     setErrors((prev) => ({ ...prev, [id]: "" }));
   };
 
-  // Validate fields
+  // Ensure user inputs are valid before submitting.
   const validate = () => {
     const newErrors = {};
     if (activeTab === "signup" && !formData.name.trim()) {
@@ -62,12 +66,9 @@ export default function LoginPage() {
     } else {
       await registerHandler({ username: formData.name, email: formData.email, password: formData.password })
     }
+    navigate("/ResumeBuilder") //user redirected after authentication
 
-    navigate("/ResumeBuilder")
-
-
-
-
+//if error exits stops submission
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -93,10 +94,10 @@ export default function LoginPage() {
     }
   };
 
-  // Reset form when switching tabs
+  // Reset form when switching tabs login and sign up
   const switchTab = (tab) => {
     setActiveTab(tab);
-    setFormData({ name: "", email: "", password: "" });
+    setFormData({ name: "", email: "", password: "" }); // resets form fields
     setErrors({});
     setSuccessMsg("");
     setRememberMe(false);
@@ -154,6 +155,7 @@ export default function LoginPage() {
     return () => cancelAnimationFrame(raf);
   }, []);
 
+  //if opened for signup the /login will open with the selected signin tab
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
@@ -165,7 +167,9 @@ export default function LoginPage() {
     }
   }, [searchParams])
 
+  //display loading
   if (loading) {
+    //aligning loader to center
     return (
       <div style={{
         minHeight: "100vh",

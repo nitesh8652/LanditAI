@@ -1,33 +1,49 @@
 import { useContext } from "react";
 import { Context } from "../Context/Context.jsx";
+import { useEffect } from "react";
 import { login, register, logout, verify } from "../Services/auth.api.js";
 
 export const useAuth = () => {
 
-    const context = useContext(Context) // Changed: Context → context
-    const {user, setUser, loading, setLoading} = context // Changed: Context → context
+    /**
+    @user → logged in user
+    @setUser → update user
+    @loading → authentication loading state
+    @setLoading → update loading
+    @description this file Hooks.js Basically tracks the user's api state to update the UI or to display Loader
+     */
+    const { user, setUser, loading, setLoading } = useContext(Context)
 
-    const loginHandler = async ({email, password}) => {
+    //When the app starts, check if the user is already logged in.
+    useEffect(() => {
         setLoading(true)
-        try{
-            const data = await login({email, password})
+        verify()
+            .then(data => { if (data?.user) setUser(data.user) })
+            .finally(() => setLoading(false))
+    }, [])
+
+
+    const loginHandler = async ({ email, password }) => {
+        setLoading(true)
+        try {
+            const data = await login({ email, password })
             setUser(data.user)
-        }catch(err){
-        }finally{
+        } catch (err) {
+        } finally {
             setLoading(false)
         }
 
     }
 
-    const registerHandler = async ({username, email, password}) => {
+    const registerHandler = async ({ username, email, password }) => {
         setLoading(true)
-        try{
-            const data = await register({username, email, password})
+        try {
+            const data = await register({ username, email, password })
             setUser(data.user)
 
-        }catch(err){
-            
-        }finally{
+        } catch (err) {
+
+        } finally {
 
             setLoading(false)
         }
@@ -35,15 +51,15 @@ export const useAuth = () => {
 
     const logoutHandler = async () => {
         setLoading(true)
-        try{
+        try {
             await logout()
             setUser(null)
-        }catch(err){
-        }finally{
+        } catch (err) {
+        } finally {
             setLoading(false)
         }
     }
 
-    return {user, loading, loginHandler, registerHandler, logoutHandler}
+    return { user, loading, loginHandler, registerHandler, logoutHandler }
 
 }
