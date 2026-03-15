@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Eye, EyeOff, Github, Lock, Mail, ArrowRight, Chrome, Zap, User } from "lucide-react";
 import { useSearchParams } from "react-router";
 import { useAuth } from "../Hooks/Hooks";
-import Loader from "../Components/Loader";
+import Loader from "../Components/Ui/Loader";
 import { useNavigate } from "react-router";
 
 
@@ -328,12 +328,7 @@ export default function LoginPage() {
         <div className="card-in" style={{ width: "100%", maxWidth: 420 }}>
 
           {/* Badge */}
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, borderRadius: 999, padding: "6px 16px", fontSize: "0.78rem", fontWeight: 500, letterSpacing: "0.04em", color: "rgba(255,255,255,0.85)", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", backdropFilter: "blur(12px)", boxShadow: "0 4px 24px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1)" }}>
-              <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#EC4E02", display: "inline-block", boxShadow: "0 0 8px rgba(236,78,2,0.8)" }} />
-              AI-Powered Writing
-            </div>
-          </div>
+         
 
           {/* Title */}
           <div style={{ textAlign: "center", marginBottom: 28 }}>

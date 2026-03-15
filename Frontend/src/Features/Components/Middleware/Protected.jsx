@@ -1,7 +1,7 @@
 import { useAuth } from "../../Hooks/Hooks.js"
 import { useNavigate } from "react-router"
 import { Navigate } from "react-router-dom";
-import Loader from "../../Components/Loader.jsx"
+import Loader from "../Ui/Loader.jsx"
 import React from 'react'
 
 const Protected = ({ children }) => {
