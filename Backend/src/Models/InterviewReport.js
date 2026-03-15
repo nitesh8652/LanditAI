@@ -97,7 +97,11 @@
         technicalQuestion: [technicalQuestionSchema],
         behaviouralQuestion: [behaviouralQuestionSchema],
         skillGaps: [skillGaps],
-        preparationPlan: [PreparationPlan]
+        preparationPlan: [PreparationPlan],
+        User:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"User"
+        }
     }, {
         timestamps: true
     })
