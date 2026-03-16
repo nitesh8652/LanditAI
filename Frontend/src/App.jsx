@@ -8,6 +8,7 @@ import ResumeBuilder from "./Features/Pages/ResumeBuilder.jsx"
 import { ContextProvider } from "./Features/Context/Context.jsx"
 import { verify } from "./Features/Services/auth.api.js"
 import Protected from "./Features/Components/Middleware/Protected.jsx"
+import Home from "./Features/Interview Report/Pages/Home.jsx"
 
 function App() {
 
@@ -29,6 +30,7 @@ function App() {
               <Route path="/ResumeBuilder" element={
                 <Protected>
                   <ResumeBuilder />
+                  <Home/>
                 </Protected>
               } />
             </Routes>

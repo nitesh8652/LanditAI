@@ -3,6 +3,7 @@ import Login from "../Pages/Login.jsx";
 import Register from "../Pages/Register.jsx";
 import ResumeBuilder from "../Pages/ResumeBuilder.jsx";
 import Protected from "../Components/Middleware/Protected.jsx";
+import Home from "../Interview Report/Pages/Home.jsx"
 
 
 /**
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
         element:
             <Protected>
                 <ResumeBuilder />
+                <Home/>
             </Protected>
     }
 ])
