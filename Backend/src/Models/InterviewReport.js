@@ -100,7 +100,7 @@
         preparationPlan: [PreparationPlan],
         User:{
             type:mongoose.Schema.Types.ObjectId,
-            ref:"User"
+            ref:"users"
         }
     }, {
         timestamps: true
