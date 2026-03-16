@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import Login from "../Pages/Login.jsx";
 import Register from "../Pages/Register.jsx";
-import ResumeBuilder from "../Pages/ResumeBuilder.jsx";
+import ResumeBuilder from "../Interview Report/Pages/ResumeBuilder.jsx";
 import Protected from "../Components/Middleware/Protected.jsx";
 import Home from "../Interview Report/Pages/Home.jsx"
 

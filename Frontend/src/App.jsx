@@ -4,11 +4,12 @@ import { BrowserRouter, Routes, Route } from "react-router"
 import Login from "./Features/Pages/Login.jsx"
 import Register from "./Features/Pages/Register.jsx"
 import Hero from "./Features/Pages/Hero.jsx"
-import ResumeBuilder from "./Features/Pages/ResumeBuilder.jsx"
+import ResumeBuilder from "./Features/Interview Report/Pages/ResumeBuilder.jsx"
 import { ContextProvider } from "./Features/Context/Context.jsx"
 import { verify } from "./Features/Services/auth.api.js"
 import Protected from "./Features/Components/Middleware/Protected.jsx"
-import Home from "./Features/Interview Report/Pages/Home.jsx"
+import InterviewPlan from "./Features/Interview Report/Pages/InterviewPlan.jsx"
+
 
 function App() {
 
@@ -30,7 +31,7 @@ function App() {
               <Route path="/ResumeBuilder" element={
                 <Protected>
                   <ResumeBuilder />
-                  <Home/>
+                
                 </Protected>
               } />
             </Routes>

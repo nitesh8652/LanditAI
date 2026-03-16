@@ -16,6 +16,7 @@ export const useAuth = () => {
 
     //When the app starts, check if the user is already logged in.
     useEffect(() => {
+        
         setLoading(true)
         verify()
             .then(data => { if (data?.user) setUser(data.user) })

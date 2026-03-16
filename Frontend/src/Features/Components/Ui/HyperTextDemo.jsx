@@ -3,9 +3,9 @@ import { motion } from "framer-motion";
 
 export default function HyperTextDemo() {
   const bio =
-    "We build intelligent systems that transform raw data into revenue. Our AI platform writes, optimises, and scales your outbound — autonomously.";
+    "Landit.AI helps candidates land better opportunities faster. Our AI analyses resumes, detects skill gaps, and optimises profiles for success.";
 
-  const triggers = ["intelligent", "AI", "revenue", "autonomously", "scales"];
+  const triggers = ["Landit.AI", "opportunities","AI", "skill","optimises.", "success."];
 
   return (
     <div
@@ -46,35 +46,7 @@ export default function HyperTextDemo() {
         className="max-w-4xl w-full relative z-10"
       >
         {/* Header pill */}
-        <div className="flex justify-center mb-8">
-          <div
-            className="flex items-center gap-2 px-4 py-1.5 rounded-full border"
-            style={{
-              backgroundColor: "#111009",
-              borderColor: "rgba(236,78,2,0.25)",
-            }}
-          >
-            <span className="relative flex h-2 w-2">
-              <span
-                className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
-                style={{ backgroundColor: "#EC4E02" }}
-              />
-              <span
-                className="relative inline-flex rounded-full h-2 w-2"
-                style={{ backgroundColor: "#EC4E02" }}
-              />
-            </span>
-            <span
-              className="text-xs font-bold tracking-widest uppercase"
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                color: "rgba(245,240,232,0.45)",
-              }}
-            >
-              Interactive Copy
-            </span>
-          </div>
-        </div>
+      
 
         {/* Card */}
         <div
@@ -100,7 +72,7 @@ export default function HyperTextDemo() {
         >
           hover the{" "}
           <span style={{ color: "#EC4E02" }}>orange keywords</span>{" "}
-          to decrypt
+          to decrypt!
         </p>
       </motion.div>
     </div>
