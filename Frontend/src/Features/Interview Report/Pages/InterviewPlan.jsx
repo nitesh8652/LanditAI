@@ -1,5 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
+import Footer from "@/Features/Components/Ui/Footer";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -10,6 +11,101 @@ const fadeUp = {
   }),
 };
 
+/* ─── Floating Amber Particles ─── */
+function AmberParticles() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    let animationId;
+    let particles = [];
+
+    const resize = () => {
+      canvas.width  = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    // Particle factory
+    const spawn = () => ({
+      x:       Math.random() * canvas.width,
+      y:       canvas.height + Math.random() * 60,        // start below fold
+      r:       Math.random() * 1.2 + 0.2,                 // radius 0.5 – 2.7
+      opacity: Math.random() * 0.55 + 0.08,               // 0.08 – 0.63
+      speed:   Math.random() * 0.55 + 0.18,               // upward drift speed
+      drift:   (Math.random() - 0.5) * 0.28,              // horizontal sway
+      wobble:  Math.random() * Math.PI * 2,               // phase offset
+      wobbleSpeed: Math.random() * 0.018 + 0.006,         // sway frequency
+      // colour: amber → deep orange spectrum
+      hue:     Math.random() * 22 + 18,                   // 18 – 40 (amber-orange)
+      sat:     Math.random() * 20 + 80,                   // 80 – 100 %
+      lum:     Math.random() * 20 + 50,                   // 50 – 70 %
+    });
+
+    // Seed initial particles spread across the canvas height
+    for (let i = 0; i < 68; i++) {
+      const p = spawn();
+      p.y = Math.random() * canvas.height;   // scatter vertically at start
+      particles.push(p);
+    }
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach((p) => {
+        // Gentle sinusoidal sway
+        p.wobble += p.wobbleSpeed;
+        p.x += p.drift + Math.sin(p.wobble) * 0.35;
+        p.y -= p.speed;
+
+        // Recycle when fully above the top
+        if (p.y + p.r < -10) Object.assign(p, spawn());
+
+        // Fade in near bottom, fade out near top
+        const fadeZone = 80;
+        const fromBottom = canvas.height - p.y;
+        const fromTop    = p.y;
+        let alpha = p.opacity;
+        if (fromBottom < fadeZone) alpha *= fromBottom / fadeZone;
+        if (fromTop    < fadeZone) alpha *= fromTop    / fadeZone;
+
+        // Radial gradient for a soft glowing ember look
+        const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 2.8);
+        grd.addColorStop(0,   `hsla(${p.hue}, ${p.sat}%, ${p.lum}%, ${alpha})`);
+        grd.addColorStop(0.5, `hsla(${p.hue}, ${p.sat}%, ${p.lum * 0.8}%, ${alpha * 0.6})`);
+        grd.addColorStop(1,   `hsla(${p.hue}, ${p.sat}%, ${p.lum * 0.6}%, 0)`);
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * 2.8, 0, Math.PI * 2);
+        ctx.fillStyle = grd;
+        ctx.fill();
+      });
+
+      animationId = requestAnimationFrame(draw);
+    };
+
+    draw();
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full pointer-events-none z-0"
+      style={{ opacity: 1 }}
+    />
+  );
+}
+
+/* ─── Main Component ─── */
 export default function InterviewPlan() {
   const [jdText, setJdText] = useState("");
   const [selfDesc, setSelfDesc] = useState("");
@@ -19,7 +115,10 @@ export default function InterviewPlan() {
 
   const handleFileSelect = (file) => {
     if (!file) return;
-    const allowed = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+    const allowed = [
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
     if (!allowed.includes(file.type)) return alert("Only PDF or DOCX files are supported.");
     if (file.size > 5 * 1024 * 1024) return alert("File must be under 5MB.");
     setUploadedFile(file);
@@ -33,7 +132,8 @@ export default function InterviewPlan() {
 
   const handleGenerate = () => {
     if (!jdText.trim()) return alert("Please paste a job description.");
-    if (!uploadedFile && !selfDesc.trim()) return alert("Please upload a resume or add a self-description.");
+    if (!uploadedFile && !selfDesc.trim())
+      return alert("Please upload a resume or add a self-description.");
     console.log("Generating strategy...", { jdText, selfDesc, uploadedFile });
   };
 
@@ -42,6 +142,9 @@ export default function InterviewPlan() {
       className="min-h-screen flex flex-col relative overflow-hidden"
       style={{ backgroundColor: "#0d0c0b", fontFamily: "'DM Sans', sans-serif", color: "#f5f0e8" }}
     >
+      {/* ── Floating amber particles ── */}
+      <AmberParticles />
+
       {/* Grid background */}
       <div
         className="absolute inset-0 pointer-events-none z-0"
@@ -56,7 +159,7 @@ export default function InterviewPlan() {
       <div
         className="absolute pointer-events-none z-0"
         style={{
-          top: "-10%", left: "-5%", width: "40%", height: "40%",
+          top: "10%", left: "-5%", width: "40%", height: "40%",
           background: "radial-gradient(circle, rgba(236,78,2,0.13) 0%, transparent 70%)",
           filter: "blur(60px)",
         }}
@@ -102,7 +205,6 @@ export default function InterviewPlan() {
             whileHover={{ borderColor: "rgba(236,78,2,0.22)" }}
             transition={{ borderColor: { duration: 0.25 } }}
           >
-            {/* Card header */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2 text-sm font-medium" style={{ color: "#f5f0e8" }}>
                 <svg width="15" height="15" fill="none" stroke="rgba(245,240,232,0.45)" strokeWidth="1.5" viewBox="0 0 24 24">
@@ -124,7 +226,6 @@ export default function InterviewPlan() {
               </span>
             </div>
 
-            {/* Textarea */}
             <textarea
               className="flex-1 min-h-[200px] rounded-lg p-3.5 text-sm resize-none outline-none transition-colors duration-200"
               style={{
@@ -160,7 +261,6 @@ export default function InterviewPlan() {
             whileHover={{ borderColor: "rgba(236,78,2,0.22)" }}
             transition={{ borderColor: { duration: 0.25 } }}
           >
-            {/* Card header */}
             <div className="flex items-center gap-2 text-sm font-medium" style={{ color: "#f5f0e8" }}>
               <svg width="15" height="15" fill="none" stroke="rgba(245,240,232,0.45)" strokeWidth="1.5" viewBox="0 0 24 24">
                 <circle cx="12" cy="8" r="3.5" />
@@ -169,7 +269,6 @@ export default function InterviewPlan() {
               Your Profile
             </div>
 
-            {/* Upload label */}
             <div className="flex items-center gap-2">
               <span className="text-xs font-medium" style={{ color: "rgba(245,240,232,0.55)" }}>
                 Upload Resume
@@ -187,7 +286,6 @@ export default function InterviewPlan() {
               </span>
             </div>
 
-            {/* Drop zone */}
             <motion.div
               className="rounded-xl p-6 text-center cursor-pointer transition-colors duration-200"
               style={{
@@ -239,14 +337,12 @@ export default function InterviewPlan() {
               )}
             </motion.div>
 
-            {/* OR divider */}
             <div className="flex items-center gap-3">
               <div className="flex-1 h-px" style={{ backgroundColor: "rgba(245,240,232,0.07)" }} />
               <span className="text-xs uppercase tracking-widest" style={{ color: "rgba(245,240,232,0.25)" }}>or</span>
               <div className="flex-1 h-px" style={{ backgroundColor: "rgba(245,240,232,0.07)" }} />
             </div>
 
-            {/* Self description */}
             <span className="text-xs font-medium" style={{ color: "rgba(245,240,232,0.55)" }}>
               Quick Self-Description
             </span>
@@ -273,7 +369,6 @@ export default function InterviewPlan() {
               }}
             />
 
-            {/* Info note */}
             <div
               className="rounded-lg px-3 py-2.5 flex items-start gap-2 text-xs leading-relaxed"
               style={{
@@ -283,54 +378,18 @@ export default function InterviewPlan() {
               }}
             >
               <div
-                className="w-2 h-2 rounded-full mt-0.5 flex-shrink-0"
+                className="w-2 h-2 rounded-full mt-1 shrink-0"
                 style={{ backgroundColor: "#3b82f6" }}
               />
-              Either a <strong className="mx-1">Resume</strong> or a{" "}
-              <strong className="mx-1">Self Description</strong> is required to generate a personalized plan.
+              Either a Resume or a
+              Self Description is required to generate a personalized plan.
             </div>
           </motion.div>
         </div>
       </div>
 
       {/* Footer bar */}
-      <motion.div
-        className="relative z-10 mt-4 flex items-center justify-between px-6 md:px-8 py-3.5"
-        style={{
-          backgroundColor: "rgba(17,16,9,0.95)",
-          borderTop: "1px solid rgba(245,240,232,0.07)",
-          backdropFilter: "blur(10px)",
-        }}
-        variants={fadeUp} initial="hidden" animate="visible" custom={3}
-      >
-        <div className="flex items-center gap-2 text-xs" style={{ color: "rgba(245,240,232,0.3)" }}>
-          <motion.div
-            className="w-1.5 h-1.5 rounded-full"
-            style={{ backgroundColor: "#EC4E02" }}
-            animate={{ opacity: [1, 0.4, 1], scale: [1, 0.7, 1] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          />
-          AI-Powered Strategy Generation · Approx 30s
-        </div>
-
-        <motion.button
-          onClick={handleGenerate}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium"
-          style={{
-            backgroundColor: "#EC4E02",
-            color: "#f5f0e8",
-            fontFamily: "'DM Sans', sans-serif",
-            border: "none",
-            cursor: "pointer",
-          }}
-          whileHover={{ backgroundColor: "#d44302", y: -1 }}
-          whileTap={{ scale: 0.97 }}
-          transition={{ duration: 0.15 }}
-        >
-          <span>★</span>
-          Generate My Interview Strategy
-        </motion.button>
-      </motion.div>
+      <Footer />
     </div>
   );
 }

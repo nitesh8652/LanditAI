@@ -22,7 +22,7 @@ export default function HyperTextDemo() {
           }}
         />
         <div
-          className="absolute bottom-[-15%] right-[-5%] w-[40%] h-[40%] rounded-full"
+          className="absolute bottom-[15%] right-[-5%] w-[40%] h-[40%] rounded-full"
           style={{
             background: "radial-gradient(circle, rgba(236,78,2,0.08) 0%, transparent 70%)",
             filter: "blur(80px)",
