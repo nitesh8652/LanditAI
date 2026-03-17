@@ -4,11 +4,13 @@ import Register from "../Pages/Register.jsx";
 import ResumeBuilder from "../Interview Report/Pages/ResumeBuilder.jsx";
 import Protected from "../Components/Middleware/Protected.jsx";
 import Home from "../Interview Report/Pages/Home.jsx"
+import InterviewReport from "../Interview Report/Pages/InterviewReport.jsx";
 
 
 /**
  @description helps to render components
  */
+
 export const router = createBrowserRouter([
     {
         path: "/login",
@@ -23,11 +25,20 @@ export const router = createBrowserRouter([
 
     //<Protected> is the middleware where it checks if the user is logged in or not
     {
-        path: "/features",
+        path: "interviewId/:interviewId",
         element:
             <Protected>
                 <ResumeBuilder />
                 <Home/>
             </Protected>
-    }
+    },
+    {
+        path: "interviewReport/:interviewId/",
+        element:
+            <Protected>
+                <InterviewReport />
+              
+            </Protected>
+    },
+    
 ])

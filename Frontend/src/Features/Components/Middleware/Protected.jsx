@@ -7,7 +7,11 @@ import React from 'react'
 const Protected = ({ children }) => {
     const { loading, user } = useAuth()
 
-    if (loading) return <Loader />
+    if (loading) return (
+        <div className="flex items-center justify-center min-h-screen">
+            <Loader />
+        </div>
+    )
     if (!user) return <Navigate to="/login" replace />
 
     return children

@@ -267,18 +267,21 @@ export default function Footer() {
 
         /* ── Divider (vertical) ── */
         .ld-footer__divider {
-          width: 1px;
-          height: 64px;
-          background: linear-gradient(
-            to bottom,
-            transparent,
-            var(--border) 30%,
-            var(--border) 70%,
-            transparent
-          );
-          flex-shrink: 0;
-        }
-
+  position: absolute;
+  left: 69%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 1px;
+  height: 70%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--border) 30%,
+    var(--border) 70%,
+    transparent
+  );
+  pointer-events: none;
+}
         /* ── Social links ── */
         .ld-footer__socials {
           display: flex;
@@ -359,7 +362,7 @@ export default function Footer() {
 
       <footer className="ld-footer">
         {/* top accent line */}
-    
+
 
         {/* floating ember particles */}
         <canvas ref={canvasRef} className="ld-footer__canvas" />
@@ -379,7 +382,17 @@ export default function Footer() {
               <p className="ld-footer__byline">
                 Made by — <strong>Nitesh Salian</strong>
               </p>
+              <p className="ld-footer__byline">Mail - <strong>nitesh.spam8652@gmail.com </strong></p>
             </div>
+
+            {/* <div className="flex items-center">
+                            <div className="ld-footer__bottom">
+                                <span className="ld-footer__copy">© {new Date().getFullYear()} Landit.AI</span>
+                                <span className="ld-footer__copy-accent">·</span>
+                                <span className="ld-footer__copy">All rights reserved</span>
+                            </div>
+                        </div> */}
+
 
             {/* vertical separator */}
             <div className="ld-footer__divider" />
@@ -405,11 +418,7 @@ export default function Footer() {
         </div>
 
         {/* micro copyright bar */}
-        {/* <div className="ld-footer__bottom">
-          <span className="ld-footer__copy">© {new Date().getFullYear()} Landit.AI</span>
-          <span className="ld-footer__copy-accent">·</span>
-          <span className="ld-footer__copy">All rights reserved</span>
-        </div> */}
+
       </footer>
     </>
   );

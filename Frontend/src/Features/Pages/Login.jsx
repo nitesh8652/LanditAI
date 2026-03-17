@@ -59,41 +59,52 @@ export default function LoginPage() {
   };
 
   // Form submit handler
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // ← prevents page reload
+ /**
+ * @function handleSubmit
+ * @description Form submission handler.
+ * Order of operations:
+ *  1. Prevent browser default (page reload).
+ *  2. Validate fields — abort early if invalid.
+ *  3. Call the appropriate auth handler.
+ *  4. Navigate ONLY on success.
+ *
+ * Bug fixed: `navigate()` was called unconditionally BEFORE validation,
+ * redirecting even on failed logins / empty forms.
+ */
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  // ── 1. Validate first ──
+  const validationErrors = validate();
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    return; // abort — do not touch the API
+  }
+
+  setIsLoading(true);
+  setErrors({});
+  setSuccessMsg("");
+
+  try {
     if (activeTab === "login") {
-      await loginHandler({ email: formData.email, password: formData.password })
+      await loginHandler({ email: formData.email, password: formData.password });
     } else {
-      await registerHandler({ username: formData.name, email: formData.email, password: formData.password })
-    }
-    navigate("/ResumeBuilder") //user redirected after authentication
-
-//if error exits stops submission
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
+      await registerHandler({
+        username: formData.name,
+        email:    formData.email,
+        password: formData.password,
+      });
     }
 
-    setIsLoading(true);
-    setSuccessMsg("");
-
-    try {
-      // 🔁 Replace this with your real API call e.g. axios.post("/api/login", formData)
-      await new Promise((res) => setTimeout(res, 1500)); // Simulated delay
-      setSuccessMsg(
-        activeTab === "login"
-          ? "Signed in successfully! Redirecting..."
-          : "Account created! Welcome to Landit.AI"
-      );
-      // e.g. navigate("/dashboard");
-    } catch (err) {
-      setErrors({ general: "Something went wrong. Please try again." });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+    // ── 2. Navigate only after successful auth ──
+    navigate("/ResumeBuilder");
+  } catch (err) {
+    // loginHandler / registerHandler re-throw on failure
+    setErrors({ general: "Something went wrong. Please try again." });
+  } finally {
+    setIsLoading(false);
+  }
+};
   // Reset form when switching tabs login and sign up
   const switchTab = (tab) => {
     setActiveTab(tab);

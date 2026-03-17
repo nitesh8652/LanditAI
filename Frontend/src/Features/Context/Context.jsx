@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import { verify } from "../Services/auth.api";
+import { verify } from "../Services/Auth.api";
 
 export const Context = createContext();
 
@@ -18,6 +18,7 @@ export const ContextProvider = ({ children }) => {
             } catch (err) {
                 console.log("Auth check failed:", err)
             } finally {
+                
                 setLoading(false)  // ← Always set loading to false
             }
         }

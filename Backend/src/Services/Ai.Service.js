@@ -72,7 +72,9 @@ const interviewReportSchema = {
             }
         }
     },
-    required: ["matchScore", "technicalQuestions", "behavioralQuestions", "skillGap", "preparationPlan"]
+    required: ["matchScore", "technicalQuestions", "behavioralQuestions", "skillGap", "preparationPlan"],
+    title: {type: Type.STRING, description: "Title of the job for which the interview report is generated"},
+
 }
 
 async function generateInterviewReport({ resume, selfDescription, jobDescription }) {

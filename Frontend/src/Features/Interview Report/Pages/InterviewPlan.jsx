@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import Footer from "@/Features/Components/Ui/Footer";
+import PageBackground from "@/Features/Components/Ui/PageBackground";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -11,101 +12,6 @@ const fadeUp = {
   }),
 };
 
-/* ─── Floating Amber Particles ─── */
-function AmberParticles() {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    let animationId;
-    let particles = [];
-
-    const resize = () => {
-      canvas.width  = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    };
-    resize();
-    window.addEventListener("resize", resize);
-
-    // Particle factory
-    const spawn = () => ({
-      x:       Math.random() * canvas.width,
-      y:       canvas.height + Math.random() * 60,        // start below fold
-      r:       Math.random() * 1.2 + 0.2,                 // radius 0.5 – 2.7
-      opacity: Math.random() * 0.55 + 0.08,               // 0.08 – 0.63
-      speed:   Math.random() * 0.55 + 0.18,               // upward drift speed
-      drift:   (Math.random() - 0.5) * 0.28,              // horizontal sway
-      wobble:  Math.random() * Math.PI * 2,               // phase offset
-      wobbleSpeed: Math.random() * 0.018 + 0.006,         // sway frequency
-      // colour: amber → deep orange spectrum
-      hue:     Math.random() * 22 + 18,                   // 18 – 40 (amber-orange)
-      sat:     Math.random() * 20 + 80,                   // 80 – 100 %
-      lum:     Math.random() * 20 + 50,                   // 50 – 70 %
-    });
-
-    // Seed initial particles spread across the canvas height
-    for (let i = 0; i < 68; i++) {
-      const p = spawn();
-      p.y = Math.random() * canvas.height;   // scatter vertically at start
-      particles.push(p);
-    }
-
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      particles.forEach((p) => {
-        // Gentle sinusoidal sway
-        p.wobble += p.wobbleSpeed;
-        p.x += p.drift + Math.sin(p.wobble) * 0.35;
-        p.y -= p.speed;
-
-        // Recycle when fully above the top
-        if (p.y + p.r < -10) Object.assign(p, spawn());
-
-        // Fade in near bottom, fade out near top
-        const fadeZone = 80;
-        const fromBottom = canvas.height - p.y;
-        const fromTop    = p.y;
-        let alpha = p.opacity;
-        if (fromBottom < fadeZone) alpha *= fromBottom / fadeZone;
-        if (fromTop    < fadeZone) alpha *= fromTop    / fadeZone;
-
-        // Radial gradient for a soft glowing ember look
-        const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 2.8);
-        grd.addColorStop(0,   `hsla(${p.hue}, ${p.sat}%, ${p.lum}%, ${alpha})`);
-        grd.addColorStop(0.5, `hsla(${p.hue}, ${p.sat}%, ${p.lum * 0.8}%, ${alpha * 0.6})`);
-        grd.addColorStop(1,   `hsla(${p.hue}, ${p.sat}%, ${p.lum * 0.6}%, 0)`);
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r * 2.8, 0, Math.PI * 2);
-        ctx.fillStyle = grd;
-        ctx.fill();
-      });
-
-      animationId = requestAnimationFrame(draw);
-    };
-
-    draw();
-
-    return () => {
-      cancelAnimationFrame(animationId);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 w-full h-full pointer-events-none z-0"
-      style={{ opacity: 1 }}
-    />
-  );
-}
-
-/* ─── Main Component ─── */
 export default function InterviewPlan() {
   const [jdText, setJdText] = useState("");
   const [selfDesc, setSelfDesc] = useState("");
@@ -142,36 +48,8 @@ export default function InterviewPlan() {
       className="min-h-screen flex flex-col relative overflow-hidden"
       style={{ backgroundColor: "#0d0c0b", fontFamily: "'DM Sans', sans-serif", color: "#f5f0e8" }}
     >
-      {/* ── Floating amber particles ── */}
-      <AmberParticles />
-
-      {/* Grid background */}
-      <div
-        className="absolute inset-0 pointer-events-none z-0"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(245,240,232,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(245,240,232,0.04) 1px, transparent 1px)",
-          backgroundSize: "32px 32px",
-        }}
-      />
-
-      {/* Ambient glows */}
-      <div
-        className="absolute pointer-events-none z-0"
-        style={{
-          top: "10%", left: "-5%", width: "40%", height: "40%",
-          background: "radial-gradient(circle, rgba(236,78,2,0.13) 0%, transparent 70%)",
-          filter: "blur(60px)",
-        }}
-      />
-      <div
-        className="absolute pointer-events-none z-0"
-        style={{
-          bottom: "-10%", right: "-5%", width: "35%", height: "35%",
-          background: "radial-gradient(circle, rgba(236,78,2,0.08) 0%, transparent 70%)",
-          filter: "blur(80px)",
-        }}
-      />
+      {/* ── Shared background: particles + grid + glows ── */}
+      <PageBackground />
 
       {/* Main content */}
       <div className="relative z-10 flex flex-col flex-1 px-6 md:px-8 pt-10 pb-0 max-w-4xl w-full mx-auto">
@@ -381,12 +259,33 @@ export default function InterviewPlan() {
                 className="w-2 h-2 rounded-full mt-1 shrink-0"
                 style={{ backgroundColor: "#3b82f6" }}
               />
-              Either a Resume or a
-              Self Description is required to generate a personalized plan.
+              Either a Resume or a Self Description is required to generate a personalized plan.
             </div>
           </motion.div>
         </div>
       </div>
+
+      
+
+  <motion.button
+          onClick={handleGenerate}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium"
+          style={{
+            backgroundColor: "#EC4E02",
+            color: "#f5f0e8",
+            fontFamily: "'DM Sans', sans-serif",
+            border: "none",
+            cursor: "pointer",
+          }}
+          whileHover={{ backgroundColor: "#d44302", y: -1 }}
+          whileTap={{ scale: 0.97 }}
+          transition={{ duration: 0.15 }}
+        >
+          <span>★</span>
+          Generate My Interview Strategy
+        </motion.button>
+    
+
 
       {/* Footer bar */}
       <Footer />
