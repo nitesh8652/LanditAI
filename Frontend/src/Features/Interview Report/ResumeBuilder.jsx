@@ -1,9 +1,9 @@
 import React from 'react'
 import Home from './Home'
-import Navbar from '../../Components/Ui/Navbar'
+import Navbar from '../Components/Ui/Navbar.jsx'
 import InterviewPlan from './InterviewPlan'
-import SectionDivider from '../../Components/Ui/SectionDivider'
-import InterviewReport from './InterviewReport'
+import SectionDivider from '../Components/Ui/SectionDivider'
+import InterviewReport from './InterviewReport.jsx'
 
 const ResumeBuilder = () => {
   return (

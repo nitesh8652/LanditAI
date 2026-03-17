@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import PageBackground from "@/Features/Components/Ui/PageBackground";
 import Footer from "@/Features/Components/Ui/Footer";
+import { useInterview } from "@/Features/Hooks/useInterview";
 
 /* ─────────────────────────────────────────
    ICONS (inline SVG helpers)
@@ -65,6 +66,9 @@ const severity = {
   medium: { bg: "rgba(236,78,2,0.12)",   border: "rgba(236,78,2,0.35)",  text: "#EC4E02", dot: "#EC4E02", label: "Medium" },
   low:    { bg: "rgba(52,211,153,0.1)",  border: "rgba(52,211,153,0.3)", text: "#34d399", dot: "#34d399", label: "Low" },
 };
+
+
+
 
 /* ─────────────────────────────────────────
    SCORE RING
@@ -334,33 +338,33 @@ export default function InterviewReport({ data: propData }) {
 
   const [activeTab, setActiveTab] = useState("technical");
   const [openQuestion, setOpenQuestion] = useState(null);
-
+  const {report} = useInterview()
   // if (!data) return null;
 
 
-  const data = propData ?? {
-    resume: "John Doe",
-    matchScore: 78,
-    createdAt: null,
-    technicalQuestion: [
-      { question: "Explain the virtual DOM in React.", intention: "Tests core React knowledge.", answer: "Virtual DOM is a lightweight copy of the real DOM. React uses it to batch updates and minimize actual DOM manipulations for better performance." },
-      { question: "What is event delegation?", intention: "Tests JavaScript fundamentals.", answer: "Event delegation attaches a single event listener to a parent element instead of multiple listeners on children, using event bubbling." },
-    ],
-    behaviouralQuestion: [
-      { question: "Tell me about a time you handled a tight deadline.", intention: "Tests time management and pressure handling.", answer: "Use the STAR method: describe the Situation, Task, Action you took, and the Result achieved." },
-      { question: "How do you handle disagreements with teammates?", intention: "Tests communication and collaboration skills.", answer: "Focus on listening actively, finding common ground, and keeping the team goal in mind." },
-    ],
-    skillGaps: [
-      { skill: "System Design", severity: "high" },
-      { skill: "TypeScript", severity: "medium" },
-      { skill: "Testing (Jest)", severity: "low" },
-    ],
-    preparationPlan: [
-      { day: 1, focus: "Data Structures", tasks: ["Revise arrays and linked lists", "Solve 5 LeetCode easy problems"] },
-      { day: 2, focus: "System Design", tasks: ["Read system design primer", "Design a URL shortener"] },
-      { day: 3, focus: "React Deep Dive", tasks: ["Revise hooks", "Build a small project using useReducer"] },
-    ],
-  }
+  // const data = propData ?? {
+  //   resume: "John Doe",
+  //   matchScore: 78,
+  //   createdAt: null,
+  //   technicalQuestion: [
+  //     { question: "Explain the virtual DOM in React.", intention: "Tests core React knowledge.", answer: "Virtual DOM is a lightweight copy of the real DOM. React uses it to batch updates and minimize actual DOM manipulations for better performance." },
+  //     { question: "What is event delegation?", intention: "Tests JavaScript fundamentals.", answer: "Event delegation attaches a single event listener to a parent element instead of multiple listeners on children, using event bubbling." },
+  //   ],
+  //   behaviouralQuestion: [
+  //     { question: "Tell me about a time you handled a tight deadline.", intention: "Tests time management and pressure handling.", answer: "Use the STAR method: describe the Situation, Task, Action you took, and the Result achieved." },
+  //     { question: "How do you handle disagreements with teammates?", intention: "Tests communication and collaboration skills.", answer: "Focus on listening actively, finding common ground, and keeping the team goal in mind." },
+  //   ],
+  //   skillGaps: [
+  //     { skill: "System Design", severity: "high" },
+  //     { skill: "TypeScript", severity: "medium" },
+  //     { skill: "Testing (Jest)", severity: "low" },
+  //   ],
+  //   preparationPlan: [
+  //     { day: 1, focus: "Data Structures", tasks: ["Revise arrays and linked lists", "Solve 5 LeetCode easy problems"] },
+  //     { day: 2, focus: "System Design", tasks: ["Read system design primer", "Design a URL shortener"] },
+  //     { day: 3, focus: "React Deep Dive", tasks: ["Revise hooks", "Build a small project using useReducer"] },
+  //   ],
+  // }
 
 
   const tabs = [

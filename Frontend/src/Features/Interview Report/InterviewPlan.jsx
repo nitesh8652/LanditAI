@@ -2,6 +2,8 @@ import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import Footer from "@/Features/Components/Ui/Footer";
 import PageBackground from "@/Features/Components/Ui/PageBackground";
+import { useNavigate } from "react-router";
+import { useInterview } from "../Hooks/useInterview.js";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -12,12 +14,19 @@ const fadeUp = {
   }),
 };
 
+
+
 export default function InterviewPlan() {
   const [jdText, setJdText] = useState("");
   const [selfDesc, setSelfDesc] = useState("");
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
+  const { loading, generateReport } = useInterview()
+  const [jobDescription, setJobDescription] = useState("")
+  const [selfDescription, setSelfDescription] = useState("")
+  const resumeInputRef = useRef(null); 
+  const navigate = useNavigate()
 
   const handleFileSelect = (file) => {
     if (!file) return;
@@ -42,6 +51,13 @@ export default function InterviewPlan() {
       return alert("Please upload a resume or add a self-description.");
     console.log("Generating strategy...", { jdText, selfDesc, uploadedFile });
   };
+
+  const handleGenerateReport = async () => {
+    const resumeFile = resumeInputRef.current.files[0];
+    const data = await generateReport({ jobDescription, selfDescription, resumeFile })
+    navigate(`/interview-report/${data._id}`)
+  }
+
 
   return (
     <div
@@ -105,7 +121,7 @@ export default function InterviewPlan() {
             </div>
 
             <textarea
-              className="flex-1 min-h-[200px] rounded-lg p-3.5 text-sm resize-none outline-none transition-colors duration-200"
+              className="flex-1 min-h-50 rounded-lg p-3.5 text-sm resize-none outline-none transition-colors duration-200"
               style={{
                 backgroundColor: "rgba(245,240,232,0.03)",
                 border: "1px solid rgba(245,240,232,0.08)",
@@ -265,26 +281,27 @@ export default function InterviewPlan() {
         </div>
       </div>
 
-      
 
-  <motion.button
-          onClick={handleGenerate}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium"
-          style={{
-            backgroundColor: "#EC4E02",
-            color: "#f5f0e8",
-            fontFamily: "'DM Sans', sans-serif",
-            border: "none",
-            cursor: "pointer",
-          }}
-          whileHover={{ backgroundColor: "#d44302", y: -1 }}
-          whileTap={{ scale: 0.97 }}
-          transition={{ duration: 0.15 }}
-        >
-          <span>★</span>
-          Generate My Interview Strategy
-        </motion.button>
-    
+
+      <motion.button
+        onClick={handleGenerate}
+        className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium"
+        style={{
+          backgroundColor: "#EC4E02",
+          color: "#f5f0e8",
+          fontFamily: "'DM Sans', sans-serif",
+          border: "none",
+          cursor: "pointer",
+        }}
+        whileHover={{ backgroundColor: "#d44302", y: -1 }}
+        whileTap={{ scale: 0.97 }}
+        transition={{ duration: 0.15 }}
+
+      >
+        <span>★</span>
+        Generate My Interview Strategy
+      </motion.button>
+
 
 
       {/* Footer bar */}

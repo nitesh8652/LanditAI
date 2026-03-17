@@ -13,9 +13,9 @@ import Protected from "./Features/Components/Middleware/Protected.jsx";
 import Hero           from "./Features/Pages/Hero.jsx";
 import Login          from "./Features/Pages/Login.jsx";
 import Register       from "./Features/Pages/Register.jsx";
-import ResumeBuilder  from "./Features/Interview Report/Pages/ResumeBuilder.jsx";
-import InterviewPlan  from "./Features/Interview Report/Pages/InterviewPlan.jsx";
-import InterviewReport from "./Features/Interview Report/Pages/InterviewReport.jsx";
+import ResumeBuilder  from "./Features/Interview Report/ResumeBuilder.jsx";
+import InterviewPlan  from "./Features/Interview Report/InterviewPlan.jsx";
+import InterviewReport from "./Features/Interview Report/InterviewReport.jsx";
 
 /**
  * @component App
