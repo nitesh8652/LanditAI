@@ -1,6 +1,6 @@
 const pdfParse = require("pdf-parse");
 const generateInterviewReport = require("../Services/Ai.Service.js");
-const interviewReportModel  = require("../Models/InterviewReport.js");
+const interviewReportModel = require("../Models/InterviewReport.js");
 
 /**
  * @function generateInterViewReportController
@@ -9,10 +9,17 @@ const interviewReportModel  = require("../Models/InterviewReport.js");
 async function generateInterViewReportController(req, res) {
   try {
     // ✅ Fixed: only parse PDF when a file was actually uploaded
+
     let resumeText = "";
     if (req.file?.buffer) {
-      const parsedPdf = await pdfParse(req.file.buffer);
-      resumeText = parsedPdf.text;
+      try {
+        const parsedPdf = await pdfParse(req.file.buffer);
+        resumeText = parsedPdf.text;
+
+      } catch (pdfErr) {
+        console.log("PDF parsing error:", pdfErr.message)
+        return res.status(400).json({success:false,message:"Failed to parse PDF."})
+      }
     }
 
     const { selfDescription, jobDescription } = req.body;
@@ -32,15 +39,15 @@ async function generateInterViewReportController(req, res) {
     });
 
     const interviewReport = await interviewReportModel.create({
-      User:                req.user._id,
-      resume:              resumeText,
+      user: req.user._id,
+      resume: resumeText,
       selfDescription,
       jobDescription,
-      matchScore:          aiReport.matchScore,
-      technicalQuestion:   aiReport.technicalQuestions,
+      matchScore: aiReport.matchScore,
+      technicalQuestion: aiReport.technicalQuestions,
       behaviouralQuestion: aiReport.behavioralQuestions,
-      skillGaps:           aiReport.skillGap,
-      preparationPlan:     aiReport.preparationPlan,
+      skillGaps: aiReport.skillGap,
+      preparationPlan: aiReport.preparationPlan,
     });
 
     res.status(201).json({
@@ -63,7 +70,7 @@ async function getInterviewReportController(req, res) {
     const { interviewId } = req.params;
 
     const interviewReport = await interviewReportModel.findOne({
-      _id:  interviewId,
+      _id: interviewId,
       user: req.user._id,
     });
 

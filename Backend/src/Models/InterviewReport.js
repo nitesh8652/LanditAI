@@ -98,7 +98,7 @@ const InterviewReportSchema = new mongoose.Schema({
     behaviouralQuestion: [behaviouralQuestionSchema],
     skillGaps: [skillGaps],
     preparationPlan: [PreparationPlan],
-    User: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "users"
     },

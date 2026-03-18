@@ -40,7 +40,7 @@ Users can create and manage tasks linked to their accounts.
 Implemented calendar-based task reminders and email notifications.
 Education
 Bachelor of Science in Computer Science
-XYZ College, Mumbai University
+Lords Universal College, Mumbai University
 Expected Graduation: 2026
 `
 
