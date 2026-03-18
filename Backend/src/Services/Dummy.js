@@ -7,7 +7,7 @@ nitesh.salian.dev@gmail.com
 GitHub: github.com/niteshsalian
 LinkedIn: linkedin.com/in/niteshsalian
 
-Professional Summary
+Summary
 Motivated Computer Science student and aspiring Full Stack Developer specializing in the MERN stack (MongoDB, Express.js, React.js, Node.js).
 
 Programming Languages: JavaScript, Java, HTML, CSS

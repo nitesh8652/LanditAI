@@ -334,37 +334,15 @@ function RoadMapCard({ day, index }) {
    MAIN COMPONENT
 ───────────────────────────────────────── */
 // export default function InterviewReport({ data }) {
-export default function InterviewReport({ data: propData }) {
+export default function InterviewReport() {
 
   const [activeTab, setActiveTab] = useState("technical");
   const [openQuestion, setOpenQuestion] = useState(null);
   const {report} = useInterview()
-  // if (!data) return null;
+  if (!report) return null;
 
 
-  // const data = propData ?? {
-  //   resume: "John Doe",
-  //   matchScore: 78,
-  //   createdAt: null,
-  //   technicalQuestion: [
-  //     { question: "Explain the virtual DOM in React.", intention: "Tests core React knowledge.", answer: "Virtual DOM is a lightweight copy of the real DOM. React uses it to batch updates and minimize actual DOM manipulations for better performance." },
-  //     { question: "What is event delegation?", intention: "Tests JavaScript fundamentals.", answer: "Event delegation attaches a single event listener to a parent element instead of multiple listeners on children, using event bubbling." },
-  //   ],
-  //   behaviouralQuestion: [
-  //     { question: "Tell me about a time you handled a tight deadline.", intention: "Tests time management and pressure handling.", answer: "Use the STAR method: describe the Situation, Task, Action you took, and the Result achieved." },
-  //     { question: "How do you handle disagreements with teammates?", intention: "Tests communication and collaboration skills.", answer: "Focus on listening actively, finding common ground, and keeping the team goal in mind." },
-  //   ],
-  //   skillGaps: [
-  //     { skill: "System Design", severity: "high" },
-  //     { skill: "TypeScript", severity: "medium" },
-  //     { skill: "Testing (Jest)", severity: "low" },
-  //   ],
-  //   preparationPlan: [
-  //     { day: 1, focus: "Data Structures", tasks: ["Revise arrays and linked lists", "Solve 5 LeetCode easy problems"] },
-  //     { day: 2, focus: "System Design", tasks: ["Read system design primer", "Design a URL shortener"] },
-  //     { day: 3, focus: "React Deep Dive", tasks: ["Revise hooks", "Build a small project using useReducer"] },
-  //   ],
-  // }
+ 
 
 
   const tabs = [
@@ -372,27 +350,27 @@ export default function InterviewReport({ data: propData }) {
       id: "technical",
       label: "Technical Questions",
       icon: Icon.technical,
-      count: data.technicalQuestion?.length ?? 0,
+      count: report.technicalQuestion?.length ?? 0,
     },
     {
       id: "behavioural",
       label: "Behavioural Questions",
       icon: Icon.behavioural,
-      count: data.behaviouralQuestion?.length ?? 0,
+      count: report.behaviouralQuestion?.length ?? 0,
     },
     {
       id: "roadmap",
       label: "Road Map",
       icon: Icon.roadmap,
-      count: data.preparationPlan?.length ?? 0,
+      count: report.preparationPlan?.length ?? 0,
     },
   ];
 
   const activeQuestions =
     activeTab === "technical"
-      ? data.technicalQuestion
+      ? report.technicalQuestion
       : activeTab === "behavioural"
-      ? data.behaviouralQuestion
+      ? report.behaviouralQuestion
       : null;
 
   return (
@@ -434,7 +412,7 @@ export default function InterviewReport({ data: propData }) {
               Interview Report
             </p>
             <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 17, fontWeight: 600, color: "#f5f0e8" }}>
-              {data.resume?.split("\n")[0] ?? "Candidate"}
+              {report.resume?.split("\n")[0] ?? "Candidate"}
             </h2>
           </div>
 
@@ -442,13 +420,13 @@ export default function InterviewReport({ data: propData }) {
             {/* Stars for match score visual */}
             <div className="hidden md:flex items-center gap-1" style={{ opacity: 0.7 }}>
               {[...Array(5)].map((_, i) => (
-                <span key={i} style={{ opacity: i < Math.round((data.matchScore / 100) * 5) ? 1 : 0.2 }}>
+                <span key={i} style={{ opacity: i < Math.round((report.matchScore / 100) * 5) ? 1 : 0.2 }}>
                   {Icon.star}
                 </span>
               ))}
             </div>
 
-            <ScoreRing score={data.matchScore} />
+            <ScoreRing score={report.matchScore} />
 
             <div
               style={{
@@ -462,7 +440,7 @@ export default function InterviewReport({ data: propData }) {
                 Prepared
               </p>
               <p style={{ fontSize: 12, color: "rgba(245,240,232,0.6)", marginTop: 1 }}>
-                {new Date(data.createdAt?.$date ?? Date.now()).toLocaleDateString("en-IN", {
+                {new Date(report.createdAt?.$date ?? Date.now()).toLocaleDateString("en-IN", {
                   day: "numeric", month: "short", year: "numeric",
                 })}
               </p>
@@ -636,7 +614,7 @@ export default function InterviewReport({ data: propData }) {
                   ))}
 
                   {/* Road Map */}
-                  {activeTab === "roadmap" && data.preparationPlan?.map((day, i) => (
+                  {activeTab === "roadmap" && report.preparationPlan?.map((day, i) => (
                     <RoadMapCard key={day.day} day={day} index={i} />
                   ))}
                 </motion.div>
@@ -668,7 +646,7 @@ export default function InterviewReport({ data: propData }) {
               </div>
 
               <div className="flex flex-col gap-2">
-                {data.skillGaps?.map((gap, i) => {
+                {report.skillGaps?.map((gap, i) => {
                   const sev = severity[gap.severity] ?? severity.low;
                   return (
                     <motion.div
@@ -719,10 +697,10 @@ export default function InterviewReport({ data: propData }) {
               </p>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { label: "Technical", value: data.technicalQuestion?.length },
-                  { label: "Behavioural", value: data.behaviouralQuestion?.length },
-                  { label: "Plan Days", value: data.preparationPlan?.length },
-                  { label: "Skill Gaps", value: data.skillGaps?.length },
+                  { label: "Technical", value: report.technicalQuestion?.length },
+                  { label: "Behavioural", value: report.behaviouralQuestion?.length },
+                  { label: "Plan Days", value: report.preparationPlan?.length },
+                  { label: "Skill Gaps", value: report.skillGaps?.length },
                 ].map((s, i) => (
                   <div
                     key={i}
@@ -748,9 +726,9 @@ export default function InterviewReport({ data: propData }) {
                 Match Analysis
               </p>
               {[
-                { label: "Technical Fit", pct: Math.min(data.matchScore + 5, 100) },
-                { label: "Experience",    pct: data.matchScore - 5 },
-                { label: "Skill Overlap", pct: data.matchScore + 2 > 100 ? 98 : data.matchScore + 2 },
+                { label: "Technical Fit", pct: Math.min(report.matchScore + 5, 100) },
+                { label: "Experience",    pct: report.matchScore - 5 },
+                { label: "Skill Overlap", pct: report.matchScore + 2 > 100 ? 98 : report.matchScore + 2 },
               ].map((bar, i) => (
                 <div key={i} className="mb-3">
                   <div className="flex justify-between items-center mb-1">

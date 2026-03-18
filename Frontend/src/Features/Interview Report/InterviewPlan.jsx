@@ -14,19 +14,14 @@ const fadeUp = {
   }),
 };
 
-
-
 export default function InterviewPlan() {
   const [jdText, setJdText] = useState("");
   const [selfDesc, setSelfDesc] = useState("");
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
-  const { loading, generateReport } = useInterview()
-  const [jobDescription, setJobDescription] = useState("")
-  const [selfDescription, setSelfDescription] = useState("")
-  const resumeInputRef = useRef(null); 
-  const navigate = useNavigate()
+  const { loading, generateReport } = useInterview();
+  const navigate = useNavigate();
 
   const handleFileSelect = (file) => {
     if (!file) return;
@@ -45,19 +40,28 @@ export default function InterviewPlan() {
     handleFileSelect(e.dataTransfer.files[0]);
   };
 
-  const handleGenerate = () => {
+  const handleGenerateReport = async () => {
+    // Basic validation
     if (!jdText.trim()) return alert("Please paste a job description.");
     if (!uploadedFile && !selfDesc.trim())
       return alert("Please upload a resume or add a self-description.");
-    console.log("Generating strategy...", { jdText, selfDesc, uploadedFile });
+
+    // ✅ Fixed: read file from state (uploadedFile) not from fileInputRef.current.files[0]
+    //    fileInputRef.current.files[0] can be stale if the user dragged & dropped.
+    const resumeFile = uploadedFile ?? null;
+
+    const savedReport = await generateReport({
+      jobDescription: jdText,
+      selfDescription: selfDesc,
+      resumeFile,
+    });
+
+    if (!savedReport) return; // generation failed — error already logged in hook
+
+    // ✅ Fixed: route is /interviewReport/:id (matches App.jsx), NOT /interview-report/:id
+    // ✅ Fixed: was `data._id` — `generateReport` now returns the report document directly
+    navigate(`/interviewReport/${savedReport._id}`);
   };
-
-  const handleGenerateReport = async () => {
-    const resumeFile = resumeInputRef.current.files[0];
-    const data = await generateReport({ jobDescription, selfDescription, resumeFile })
-    navigate(`/interview-report/${data._id}`)
-  }
-
 
   return (
     <div
@@ -281,28 +285,25 @@ export default function InterviewPlan() {
         </div>
       </div>
 
-
-
       <motion.button
-        onClick={handleGenerate}
-        className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium"
+        onClick={handleGenerateReport}
+        disabled={loading}
+        className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium mx-auto mt-6"
         style={{
           backgroundColor: "#EC4E02",
           color: "#f5f0e8",
           fontFamily: "'DM Sans', sans-serif",
           border: "none",
-          cursor: "pointer",
+          cursor: loading ? "not-allowed" : "pointer",
+          opacity: loading ? 0.7 : 1,
         }}
-        whileHover={{ backgroundColor: "#d44302", y: -1 }}
-        whileTap={{ scale: 0.97 }}
+        whileHover={!loading ? { backgroundColor: "#d44302", y: -1 } : {}}
+        whileTap={!loading ? { scale: 0.97 } : {}}
         transition={{ duration: 0.15 }}
-
       >
         <span>★</span>
-        Generate My Interview Strategy
+        {loading ? "Generating..." : "Generate My Interview Strategy"}
       </motion.button>
-
-
 
       {/* Footer bar */}
       <Footer />

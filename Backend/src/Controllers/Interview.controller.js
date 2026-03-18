@@ -1,64 +1,50 @@
-/**
- * @file Interview.controller.js
- * @description Request handlers for interview report generation and retrieval.
- *
- * Bugs fixed:
- * - `pdf-parse` is a plain async function, NOT a class. `new pdfParse.PDFParse()`
- *   throws; correct usage is `await pdfParse(buffer)`.
- * - Double `module.exports` at the bottom — the second assignment wiped the first,
- *   exporting only `generateInterViewReportController`. Fixed to one export object.
- * - Missing `getInterviewReportController` and `getAllInterviewReportController`
- *   were not exported in the GitHub version — now included.
- */
-
-const pdfParse              = require("pdf-parse");
+const pdfParse = require("pdf-parse").default ?? require("pdf-parse");
 const generateInterviewReport = require("../Services/Ai.Service.js");
 const interviewReportModel  = require("../Models/InterviewReport.js");
 
 /**
  * @function generateInterViewReportController
- * @description
- *  1. Parses the uploaded PDF buffer into plain text using pdf-parse.
- *  2. Sends text + descriptions to Gemini AI service.
- *  3. Persists the structured report to MongoDB.
- *  4. Returns 201 with the saved document.
- *
  * @route  POST /api/interview/
- * @param  {Express.Request}  req - req.file (PDF buffer), req.body, req.user
- * @param  {Express.Response} res
+ *
+ * Bugs fixed:
+ * - `req.file` is undefined when the user submits only a selfDescription (no PDF).
+ *   Previously `pdfParse(req.file.buffer)` threw "Cannot read properties of undefined".
+ *   Now guarded: parse PDF only when req.file exists, otherwise fall back to empty string.
  */
 async function generateInterViewReportController(req, res) {
   try {
-    /*
-     * pdf-parse(buffer) → { text, numpages, info, ... }
-     * It accepts a Buffer directly — no class instantiation needed.
-     */
-    const parsedPdf = await pdfParse(req.file.buffer);
-    const resumeText = parsedPdf.text;
+    // ✅ Fixed: only parse PDF when a file was actually uploaded
+    let resumeText = "";
+    if (req.file?.buffer) {
+      const parsedPdf = await pdfParse(req.file.buffer);
+      resumeText = parsedPdf.text;
+    }
 
     const { selfDescription, jobDescription } = req.body;
 
-    // Call Gemini AI service — returns structured JSON matching the schema
+    // Require at least one profile source
+    if (!resumeText && !selfDescription?.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide either a resume file or a self-description.",
+      });
+    }
+
     const aiReport = await generateInterviewReport({
       resume: resumeText,
       selfDescription,
       jobDescription,
     });
 
-    /*
-     * Map AI response keys → Mongoose schema field names.
-     * AI returns: technicalQuestions, behavioralQuestions, skillGap
-     * Schema uses: technicalQuestion, behaviouralQuestion, skillGaps
-     */
     const interviewReport = await interviewReportModel.create({
-      user:                req.user._id,        // lowercase — matches schema
+      user:                req.user._id,
       resume:              resumeText,
       selfDescription,
       jobDescription,
       matchScore:          aiReport.matchScore,
-      technicalQuestion:   aiReport.technicalQuestions,  // AI: plural → schema: singular
-      behaviouralQuestion: aiReport.behavioralQuestions, // AI: behavioral → schema: behavioural
-      skillGaps:           aiReport.skillGap,             // AI: singular → schema: plural
+      technicalQuestion:   aiReport.technicalQuestions,
+      behaviouralQuestion: aiReport.behavioralQuestions,
+      skillGaps:           aiReport.skillGap,
       preparationPlan:     aiReport.preparationPlan,
     });
 
@@ -75,18 +61,12 @@ async function generateInterViewReportController(req, res) {
 
 /**
  * @function getInterviewReportController
- * @description Fetches a single report by ID, scoped to the logged-in user
- * so users cannot read each other's reports.
- *
  * @route  GET /api/interview/interviewReport/:interviewId
- * @param  {Express.Request}  req - req.params.interviewId, req.user
- * @param  {Express.Response} res
  */
 async function getInterviewReportController(req, res) {
   try {
     const { interviewId } = req.params;
 
-    // Scope by both _id AND user — prevents IDOR vulnerability
     const interviewReport = await interviewReportModel.findOne({
       _id:  interviewId,
       user: req.user._id,
@@ -112,19 +92,13 @@ async function getInterviewReportController(req, res) {
 
 /**
  * @function getAllInterviewReportController
- * @description Returns a lightweight summary list of all reports for the user.
- * Heavy fields are excluded via .select() to keep the response small.
- *
  * @route  GET /api/interview/
- * @param  {Express.Request}  req - req.user
- * @param  {Express.Response} res
  */
 async function getAllInterviewReportController(req, res) {
   try {
     const reports = await interviewReportModel
       .find({ user: req.user._id })
       .sort({ createdAt: -1 })
-      // Strip large text fields — client only needs summary cards
       .select(
         "-resume -selfDescription -jobDescription -__v -technicalQuestion -behaviouralQuestion -skillGaps -preparationPlan"
       );
@@ -140,7 +114,6 @@ async function getAllInterviewReportController(req, res) {
   }
 }
 
-// ── Single export object — a second module.exports would overwrite this ──
 module.exports = {
   generateInterViewReportController,
   getInterviewReportController,
