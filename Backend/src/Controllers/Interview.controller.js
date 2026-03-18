@@ -2,24 +2,23 @@ const pdfParse = require("pdf-parse");
 const generateInterviewReport = require("../Services/Ai.Service.js");
 const interviewReportModel = require("../Models/InterviewReport.js");
 
+
 /**
  * @function generateInterViewReportController
  * @route  POST /api/interview/
  */
+
+
+
 async function generateInterViewReportController(req, res) {
   try {
-    // ✅ Fixed: only parse PDF when a file was actually uploaded
+    console.log("━━━ req.file ━━━", req.file)
+    console.log("━━━ req.body ━━━", req.body)
 
     let resumeText = "";
     if (req.file?.buffer) {
-      try {
-        const parsedPdf = await pdfParse(req.file.buffer);
-        resumeText = parsedPdf.text;
-
-      } catch (pdfErr) {
-        console.log("PDF parsing error:", pdfErr.message)
-        return res.status(400).json({success:false,message:"Failed to parse PDF."})
-      }
+      const parsedPdf = await new pdfParse.PDFParse(Uint8Array.from(req.file.buffer)).getText();
+      resumeText = parsedPdf.text;
     }
 
     const { selfDescription, jobDescription } = req.body;

@@ -48,35 +48,35 @@ const selfDescription = `
  Experienced in building real-world applications including job portals, resume analysis tools, and URL shorteners. Strong understanding of REST APIs, authentication systems, and database design. Actively improving Data Structures & Algorithms in Java and exploring AI-powered applications.
 `
 
-const jobDescription = `
-Junior MERN Stack Developer (Fresher)
+    const jobDescription = `
+    Junior MERN Stack Developer (Fresher)
 
-Location: Bangalore / Remote
-Company: TechNova Solutions Pvt. Ltd.
-Job Type: Full-Time
-Salary: ₹4 – ₹7 LPA
-About the Role
-TechNova Solutions is looking for a passionate Junior MERN Stack Deeloper who is eager to build scalable web applications and work in a fast-paced developmentenvironment. The ideal candidate should have hands-on experience with React.js, Node.js, Expess.js, and MongoDB, and a strong understanding of modern JavaScript development practices.
-This role is ideal for fresh graduates or entry-leve developers who want to gain experience in building production-level full-stack applications.
-Key Responsibilities
-Develop and maintain full-stack web applications using the MERN stack.
-Build RESTful APIs using Node.js and Express.js.
-Create responsive and user-friendly UI components using React.js.
-Design and manage MongoDB databases and schemas.
-Implement authentication and authorization using JWT or session-based authentication.
-Collaborate with designers and backend developers to deliver high-quality features.
-Debug issues and improve application performance.
-Follow clean coding practices and version control using Git.
-Required Skills
-Strong knowledge of JavaScript (ES6+)
-Experience with React.js
-Knowledge of Node.js and Express.js
-Experience with MongoDB and Mongoose
-Understanding of REST APIs
-Familiarity with Git and GitHub
-Basic understanding of Data Structures and Algorithms
-Knowledge of HTML5, CSS3, and responsive design
-`
+    Location: Bangalore / Remote
+    Company: TechNova Solutions Pvt. Ltd.
+    Job Type: Full-Time
+    Salary: ₹4 – ₹7 LPA
+    About the Role
+    TechNova Solutions is looking for a passionate Junior MERN Stack Deeloper who is eager to build scalable web applications and work in a fast-paced developmentenvironment. The ideal candidate should have hands-on experience with React.js, Node.js, Expess.js, and MongoDB, and a strong understanding of modern JavaScript development practices.
+    This role is ideal for fresh graduates or entry-leve developers who want to gain experience in building production-level full-stack applications.
+    Key Responsibilities
+    Develop and maintain full-stack web applications using the MERN stack.
+    Build RESTful APIs using Node.js and Express.js.
+    Create responsive and user-friendly UI components using React.js.
+    Design and manage MongoDB databases and schemas.
+    Implement authentication and authorization using JWT or session-based authentication.
+    Collaborate with designers and backend developers to deliver high-quality features.
+    Debug issues and improve application performance.
+    Follow clean coding practices and version control using Git.
+    Required Skills
+    Strong knowledge of JavaScript (ES6+)
+    Experience with React.js
+    Knowledge of Node.js and Express.js
+    Experience with MongoDB and Mongoose
+    Understanding of REST APIs
+    Familiarity with Git and GitHub
+    Basic understanding of Data Structures and Algorithms
+    Knowledge of HTML5, CSS3, and responsive design
+    `
 
 module.exports={
     resume,
