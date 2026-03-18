@@ -25,10 +25,6 @@ const api = axios.create({
  * @param {string}  params.selfDescription - Candidate's own summary (optional if resume provided).
  * @param {File}    params.resumeFile      - PDF file selected by the user.
  * @returns {Promise<object>} The generated interview report from the backend.
- *
- * Bugs fixed:
- * - `console.log(data)` referenced undefined `data` → removed.
- * - POST target was `/generate-report/` but backend route is `/` (mounted at /api/interview).
  */
 export const generateInterviewReport = async ({
   jobDescription,

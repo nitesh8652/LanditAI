@@ -21,10 +21,6 @@ export const useInterview = () => {
    * @description Calls the AI service, stores the result in context, and
    * returns the saved report so the caller can navigate to it by _id.
    *
-   * Bugs fixed:
-   * - `setReport` was used without being destructured from context → ReferenceError
-   * - `response.InterviewReport` (capital I) → controller returns `interviewReport`
-   * - Returned `response` (the full axios wrapper) instead of the report document
    */
   const generateReport = async ({ jobDescription, selfDescription, resumeFile }) => {
     setLoading(true);

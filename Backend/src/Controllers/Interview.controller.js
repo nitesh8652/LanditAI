@@ -1,15 +1,10 @@
-const pdfParse = require("pdf-parse").default ?? require("pdf-parse");
+const pdfParse = require("pdf-parse");
 const generateInterviewReport = require("../Services/Ai.Service.js");
 const interviewReportModel  = require("../Models/InterviewReport.js");
 
 /**
  * @function generateInterViewReportController
  * @route  POST /api/interview/
- *
- * Bugs fixed:
- * - `req.file` is undefined when the user submits only a selfDescription (no PDF).
- *   Previously `pdfParse(req.file.buffer)` threw "Cannot read properties of undefined".
- *   Now guarded: parse PDF only when req.file exists, otherwise fall back to empty string.
  */
 async function generateInterViewReportController(req, res) {
   try {
@@ -37,7 +32,7 @@ async function generateInterViewReportController(req, res) {
     });
 
     const interviewReport = await interviewReportModel.create({
-      user:                req.user._id,
+      User:                req.user._id,
       resume:              resumeText,
       selfDescription,
       jobDescription,

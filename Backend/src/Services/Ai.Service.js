@@ -1,7 +1,7 @@
 const { GoogleGenAI, Type } = require("@google/genai")
 
 const ai = new GoogleGenAI({
-    apiKey: process.env.OPENROUTER_API_KEY
+    apiKey: process.env.GEMINI_API_KEY
 })
 
 // Define schema directly using Gemini's native schema format
@@ -73,7 +73,7 @@ const interviewReportSchema = {
         }
     },
     required: ["matchScore", "technicalQuestions", "behavioralQuestions", "skillGap", "preparationPlan"],
-    title: {type: Type.STRING, description: "Title of the job for which the interview report is generated"},
+    // title: {type: Type.STRING, description: "Title of the job for which the interview report is generated"},
 
 }
 
