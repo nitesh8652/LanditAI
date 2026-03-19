@@ -23,7 +23,7 @@ export default function InterviewPlan() {
   const { loading, generateReport, reports, getReports  } = useInterview();
   const navigate = useNavigate();
 
-  useEffect(() => {
+useEffect(() => {
   getReports();
 }, []);
 

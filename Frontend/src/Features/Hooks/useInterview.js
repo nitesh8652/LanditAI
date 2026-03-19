@@ -72,10 +72,10 @@ export const useInterview = () => {
     setLoading(true);
     try {
       const response = await getAllInterviewReports();
-      // controller returns `interviewReport` (array) for the list endpoint
-      setReports(response?.interviewReport);
+      setReports(response?.interviewReport ?? []);  // ← add ?? []
     } catch (err) {
       console.error("Error fetching reports:", err);
+      setReports([]);                                 // ← set empty on error too
     } finally {
       setLoading(false);
     }
