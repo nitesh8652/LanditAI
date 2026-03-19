@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import Footer from "@/Features/Components/Ui/Footer";
 import PageBackground from "@/Features/Components/Ui/PageBackground";
@@ -20,8 +20,12 @@ export default function InterviewPlan() {
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
-  const { loading, generateReport } = useInterview();
+  const { loading, generateReport, reports, getReports  } = useInterview();
   const navigate = useNavigate();
+
+  useEffect(() => {
+  getReports();
+}, []);
 
   const handleFileSelect = (file) => {
     if (!file) return;
@@ -58,8 +62,7 @@ export default function InterviewPlan() {
 
     if (!savedReport) return; // generation failed — error already logged in hook
 
-    // ✅ Fixed: route is /interviewReport/:id (matches App.jsx), NOT /interview-report/:id
-    // ✅ Fixed: was `data._id` — `generateReport` now returns the report document directly
+  
     navigate(`/interviewReport/${savedReport._id}`);
   };
 
@@ -304,6 +307,41 @@ export default function InterviewPlan() {
         <span>★</span>
         {loading ? "Generating..." : "Generate My Interview Strategy"}
       </motion.button>
+
+
+      {/* recent reports list */}
+
+{reports.length > 0 && (
+  <section className="relative z-10 max-w-4xl w-full mx-auto px-6 md:px-8 mt-6 mb-2">
+    <p className="text-xs uppercase tracking-widest mb-3" style={{ color: "rgba(245,240,232,0.3)", fontFamily: "'DM Sans', sans-serif" }}>
+      Recent Reports
+    </p>
+    <div className="flex flex-col gap-2">
+      {reports.map(r => (
+        <button
+          key={r._id}
+          onClick={() => navigate(`/interviewReport/${r._id}`)}
+          className="flex items-center justify-between rounded-xl px-4 py-3 text-left transition-colors duration-200"
+          style={{
+            backgroundColor: "#111009",
+            border: "1px solid rgba(245,240,232,0.07)",
+            cursor: "pointer",
+            fontFamily: "'DM Sans', sans-serif",
+          }}
+          onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(236,78,2,0.3)"}
+          onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(245,240,232,0.07)"}
+        >
+          <span className="text-sm truncate" style={{ color: "#f5f0e8" }}>
+            {r.title || "Untitled Report"}
+          </span>
+          <span className="text-xs shrink-0 ml-4" style={{ color: "rgba(245,240,232,0.3)" }}>
+            {new Date(r.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+          </span>
+        </button>
+      ))}
+    </div>
+  </section>
+)}
 
       {/* Footer bar */}
       <Footer />

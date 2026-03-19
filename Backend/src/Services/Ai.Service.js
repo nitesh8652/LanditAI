@@ -8,6 +8,11 @@ const ai = new GoogleGenAI({
 const interviewReportSchema = {
     type: Type.OBJECT,
     properties: {
+
+         title: {                                       
+            type: Type.STRING,
+            description: "Title of the job for which the interview report is generated"
+        },
         matchScore: {
             type: Type.NUMBER,
             description: "A score between 0 and 100 how well the candidate's profile matches the job description"
@@ -72,8 +77,7 @@ const interviewReportSchema = {
             }
         }
     },
-    required: ["matchScore", "technicalQuestions", "behavioralQuestions", "skillGap", "preparationPlan"],
-    // title: {type: Type.STRING, description: "Title of the job for which the interview report is generated"},
+    required: ["title", "matchScore", "technicalQuestions", "behavioralQuestions", "skillGap", "preparationPlan"],
 
 }
 

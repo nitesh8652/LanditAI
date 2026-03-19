@@ -42,6 +42,7 @@ async function generateInterViewReportController(req, res) {
       resume: resumeText,
       selfDescription,
       jobDescription,
+      title:aiReport.interviewTitle,
       matchScore: aiReport.matchScore,
       technicalQuestion: aiReport.technicalQuestions,
       behaviouralQuestion: aiReport.behavioralQuestions,
