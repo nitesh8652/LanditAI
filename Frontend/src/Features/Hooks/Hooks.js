@@ -9,8 +9,11 @@
  */
 
 import { useContext } from "react";
-import { Context }   from "../Context/Context.jsx";
+import { Context } from "../Context/Context.jsx";
 import { login, register, logout } from "../Services/Auth.api.js"
+import { googleLogin } from "../Services/Firebase.js";
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../Services/Firebase"
 
 /**
  * @hook useAuth
@@ -83,5 +86,27 @@ export const useAuth = () => {
     }
   };
 
-  return { user, loading, loginHandler, registerHandler, logoutHandler };
+
+  /**
+   * @function handleGoogleLogin
+   * @description backend, then updates global auth state with the returned MongoDB user On failure, the error bubbles up to the calling component (Login.jsx).
+   */
+
+  const googleLoginHandler = async () => {
+    setLoading(true)
+    try {
+      const data = await googleLogin() //backend call
+      if (data?.user) setUser(data.user);
+
+    } catch (err) {
+      console.error("Google login failed:", err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+
+  }
+
+
+  return { user, loading, loginHandler, registerHandler, logoutHandler, googleLoginHandler };
 };

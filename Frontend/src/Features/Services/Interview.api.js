@@ -50,7 +50,7 @@ export const generateInterviewReport = async ({
  * @param {string} interviewId - The `_id` of the InterviewReport document.
  * @returns {Promise<object>} The interview report object.
  *
- * Bug fixed: called `/report/:id` but backend route is `/interviewReport/:id`.
+
  */
 export const getInterviewReportById = async (interviewId) => {
   const response = await api.get(`/interviewReport/${interviewId}`);

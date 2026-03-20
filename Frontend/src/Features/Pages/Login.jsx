@@ -4,7 +4,8 @@ import { useSearchParams } from "react-router";
 import { useAuth } from "../Hooks/Hooks";
 import Loader from "../Components/Ui/Loader";
 import { useNavigate } from "react-router";
-
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../Services/Firebase"
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,9 +16,23 @@ export default function LoginPage() {
   const [errors, setErrors] = useState({});
   const [successMsg, setSuccessMsg] = useState("");
 
-  const { loading, loginHandler, registerHandler } = useAuth()
   const navigate = useNavigate()
 
+  const { loading, loginHandler, registerHandler, googleLoginHandler } = useAuth()
+
+  // Add a state for Google-specific errors:
+  const [googleError, setGoogleError] = useState("");
+
+  const handleGoogleLogin = async () => {
+    setGoogleError("")
+
+    try {
+      await googleLoginHandler()
+      navigate("/ResumeBuilder")
+    } catch (err) {
+      setGoogleError("Google sign-in failed. Please try again.");
+    }
+  }
   // stores input data
   const [formData, setFormData] = useState({
     name: "",
@@ -59,52 +74,50 @@ export default function LoginPage() {
   };
 
   // Form submit handler
- /**
- * @function handleSubmit
- * @description Form submission handler.
- * Order of operations:
- *  1. Prevent browser default (page reload).
- *  2. Validate fields — abort early if invalid.
- *  3. Call the appropriate auth handler.
- *  4. Navigate ONLY on success.
- *
- * Bug fixed: `navigate()` was called unconditionally BEFORE validation,
- * redirecting even on failed logins / empty forms.
- */
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  /**
+  * @function handleSubmit
+  * @description Form submission handler.
+  * Order of operations:
+  *  1. Prevent browser default (page reload).
+  *  2. Validate fields — abort early if invalid.
+  *  3. Call the appropriate auth handler.
+  *  4. Navigate ONLY on success.
+  *
+  */
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  // ── 1. Validate first ──
-  const validationErrors = validate();
-  if (Object.keys(validationErrors).length > 0) {
-    setErrors(validationErrors);
-    return; // abort — do not touch the API
-  }
-
-  setIsLoading(true);
-  setErrors({});
-  setSuccessMsg("");
-
-  try {
-    if (activeTab === "login") {
-      await loginHandler({ email: formData.email, password: formData.password });
-    } else {
-      await registerHandler({
-        username: formData.name,
-        email:    formData.email,
-        password: formData.password,
-      });
+    // ── 1. Validate first ──
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return; // abort — do not touch the API
     }
 
-    // ── 2. Navigate only after successful auth ──
-    navigate("/ResumeBuilder");
-  } catch (err) {
-    // loginHandler / registerHandler re-throw on failure
-    setErrors({ general: "Something went wrong. Please try again." });
-  } finally {
-    setIsLoading(false);
-  }
-};
+    setIsLoading(true);
+    setErrors({});
+    setSuccessMsg("");
+
+    try {
+      if (activeTab === "login") {
+        await loginHandler({ email: formData.email, password: formData.password });
+      } else {
+        await registerHandler({
+          username: formData.name,
+          email: formData.email,
+          password: formData.password,
+        });
+      }
+
+      // ── 2. Navigate only after successful auth ──
+      navigate("/ResumeBuilder");
+    } catch (err) {
+      // loginHandler / registerHandler re-throw on failure
+      setErrors({ general: "Something went wrong. Please try again." });
+    } finally {
+      setIsLoading(false);
+    }
+  };
   // Reset form when switching tabs login and sign up
   const switchTab = (tab) => {
     setActiveTab(tab);
@@ -339,7 +352,7 @@ const handleSubmit = async (e) => {
         <div className="card-in" style={{ width: "100%", maxWidth: 420 }}>
 
           {/* Badge */}
-         
+
 
           {/* Title */}
           <div style={{ textAlign: "center", marginBottom: 28 }}>
@@ -373,31 +386,49 @@ const handleSubmit = async (e) => {
 
             {/* Form — onSubmit with e.preventDefault inside handleSubmit */}
             <form id={activeTab === "login" ? "login-form" : "signup-form"} onSubmit={handleSubmit} noValidate>
-              <div style={{ padding: "24px" }}>
+              <div style={{ padding: "24px" }} />
 
-                {/* General error */}
-                {errors.general && (
-                  <div style={{ background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.3)", borderRadius: 10, padding: "10px 14px", marginBottom: 16, fontSize: "0.8rem", color: "#fca5a5" }}>
-                    {errors.general}
-                  </div>
-                )}
-
-                {/* Success message */}
-                {successMsg && (
-                  <div style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 10, padding: "10px 14px", marginBottom: 16, fontSize: "0.8rem", color: "#86efac" }}>
-                    {successMsg}
-                  </div>
-                )}
-
-                {/* Social buttons */}
-                <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
-                  <button type="button" className="social-btn">
-                    <Github size={15} /> GitHub
-                  </button>
-                  <button type="button" className="social-btn">
-                    <Chrome size={15} /> Google
-                  </button>
+              {/* General error */}
+              {errors.general && (
+                <div style={{ background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.3)", borderRadius: 10, padding: "10px 14px", marginBottom: 16, fontSize: "0.8rem", color: "#fca5a5" }}>
+                  {errors.general}
                 </div>
+              )}
+
+              {/* Success message */}
+              {successMsg && (
+                <div style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 10, padding: "10px 14px", marginBottom: 16, fontSize: "0.8rem", color: "#86efac" }}>
+                  {successMsg}
+                </div>
+              )}
+
+              {/* Social buttons */}
+              <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+                <button type="button" className="social-btn">
+                  <Github size={15} /> GitHub
+                </button>
+                <button
+                  type="button"
+                  className="social-btn"
+                  onClick={handleGoogleLogin}
+                  disabled={loading}
+                  style={{ opacity: loading ? 0.6 : 1 }}
+                >
+                  <Chrome size={15} /> Google
+                </button>
+
+                {googleError && (
+                  <div style={{
+                    background: "rgba(220,38,38,0.1)",
+                    border: "1px solid rgba(220,38,38,0.3)",
+                    borderRadius: 10, padding: "8px 14px",
+                    marginBottom: 12, fontSize: "0.8rem", color: "#fca5a5"
+                  }}>
+                    {googleError}
+
+                  </div>
+
+                )}
 
                 {/* Divider */}
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>

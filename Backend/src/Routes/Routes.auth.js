@@ -1,6 +1,7 @@
 const {Router} = require('express');
 const authController = require('../Controllers/auth.controller');
 const authMiddleware = require('../Middleware/Auth.middleware');
+const {googleAuthController} = require ('../Controllers/auth.controller')
 const authRouter = Router();
 
 /**
@@ -30,5 +31,13 @@ authRouter.get('/logout',authController.logoutUserController);
  * @access Private
  */
 authRouter.get("/verify", authMiddleware.authUser,authController.verifyController );
+
+/**
+ * @route POST /api/auth/google
+ * @description Verify Firebase Google ID token, create/find user, issue JWT
+ * @access Public
+ */
+
+authRouter.post('/google',googleAuthController)
 
 module.exports = authRouter;

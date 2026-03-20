@@ -16,7 +16,7 @@ export const InterviewContext = createContext();
  *
  * @param {React.ReactNode} children - Child components that consume the context.
  *
- * Bug fixed: prop was destructured as `Children` (capital C) which shadowed
+
  * React's built-in `Children` import and never rendered anything.
  */
 export const InterviewProvider = ({ children }) => {

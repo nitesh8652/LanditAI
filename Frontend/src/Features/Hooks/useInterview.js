@@ -2,7 +2,7 @@ import {
   generateInterviewReport,
   getInterviewReportById,
   getAllInterviewReports,
-  generateResumePdfController,
+  generateResumePdf,  // was generateResumePdfController
 } from "../Services/Interview.api.js";
 import { useContext } from "react";
 import { InterviewContext } from "../Context/Interview.context.jsx";
@@ -47,8 +47,6 @@ export const useInterview = () => {
    * @description Fetches a single report by ID and stores it in context.
    * Called by InterviewReport on mount when context is empty (e.g. page refresh).
    *
-   * Bug fixed: previous version called `getAllInterviewReports` (wrong fn) and
-   * forgot to invoke it with `()`.
    */
   const getReportById = async (interviewId) => {
     setLoading(true);
@@ -66,8 +64,6 @@ export const useInterview = () => {
    * @function getReports
    * @description Fetches the summary list of all reports for the logged-in user.
    *
-   * Bug fixed: was previously named `getReportById` but called getAllInterviewReports;
-   * renamed and corrected.
    */
   const getReports = async () => {
     setLoading(true);
