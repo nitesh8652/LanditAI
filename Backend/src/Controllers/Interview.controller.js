@@ -1,5 +1,5 @@
 const pdfParse = require("pdf-parse");
-const generateInterviewReport = require("../Services/Ai.Service.js");
+const { generateInterviewReport, generateResumePdf } = require("../Services/Ai.Service.js");
 const interviewReportModel = require("../Models/InterviewReport.js");
 
 
@@ -116,8 +116,47 @@ async function getAllInterviewReportController(req, res) {
   }
 }
 
+/**
+ * @function generateResumePdf
+ * @route  POST /api/interview/generatingResumePdf
+ */
+
+async function generateResumePdfController(req, res) {
+  try {
+    const { intervewReportId } = req.params;
+
+    const interviewReport = await interviewReportModel.findById(intervewReportId);
+
+    if (!interviewReport) {
+      return res.status(404).json({
+        message: "Interview Report not found"
+      });
+    }
+
+    const { resume, jobDescription, selfDescription } = interviewReport;
+
+    const pdfBuffer = await generateResumePdf({
+      resume,
+      selfDescription,
+      jobDescription
+    });
+
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename=resume_${intervewReportId}.pdf`
+    });
+
+    res.status(200).send(pdfBuffer);
+
+  } catch (err) {
+    console.error("generateResumePdfController error:", err);
+    res.status(500).json({ message: "Failed to generate PDF" });
+  }
+}
+
 module.exports = {
   generateInterViewReportController,
   getInterviewReportController,
   getAllInterviewReportController,
+  generateResumePdfController 
 };

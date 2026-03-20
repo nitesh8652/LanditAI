@@ -1,4 +1,5 @@
 const { GoogleGenAI, Type } = require("@google/genai")
+const puppeteer = require("puppeteer")
 
 const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY
@@ -9,7 +10,7 @@ const interviewReportSchema = {
     type: Type.OBJECT,
     properties: {
 
-         title: {                                       
+        title: {
             type: Type.STRING,
             description: "Title of the job for which the interview report is generated"
         },
@@ -102,4 +103,47 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
     return parsed
 }
 
-module.exports = generateInterviewReport
+async function generatePdfFromHtml(htmlContent) {
+    const browser = await puppeteer.launch()
+    const page = await browser.newPage()
+    await page.setContent(htmlContent)
+    // await page.setContent(htmlContent,{waitUntil:"networkidle0"})
+    
+    const pdfBuffer = await page.pdf({ format: 'A4' })
+    await browser.close()
+    return pdfBuffer
+}
+
+async function generateResumePdf({ resume, selfDescription, jobDescription }) {
+  const resumePdfSchema = {
+    type: Type.OBJECT,
+    properties: {
+      html: { type: Type.STRING, description: "Complete HTML content of the resume, styled inline, ready to be rendered by puppeteer into a PDF" }
+    },
+    required: ["html"]
+  };
+
+  const prompt = `Generate a clean, professional resume HTML page from the following details.
+Resume: ${resume}
+Self Description: ${selfDescription}
+Job Description: ${jobDescription}
+
+Return a single HTML document with inline CSS styles. No external stylesheets or scripts.`;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: prompt,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: resumePdfSchema
+    }
+  });
+
+  const { html } = JSON.parse(response.text);
+  return generatePdfFromHtml(html);
+}
+
+
+module.exports = {  
+    generateInterviewReport,
+    generateResumePdf}

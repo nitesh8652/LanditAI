@@ -68,3 +68,15 @@ export const getAllInterviewReports = async () => {
   const response = await api.get("/");
   return response.data;
 };
+
+/**
+ * @route GET/api/interview/resume/pdf
+ * @description Extracts text content from a PDF file.
+ * @param {File} pdfFile - The PDF file to parse.
+ */
+
+export const generateResumePdf = async({interviewReportId}) =>{
+  const response = await api.post(`/resume/pdf/${interviewReportId}`);
+  return response.data
+}
+
