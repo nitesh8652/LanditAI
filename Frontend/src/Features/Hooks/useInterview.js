@@ -2,6 +2,7 @@ import {
   generateInterviewReport,
   getInterviewReportById,
   getAllInterviewReports,
+  generateResumePdfController,
 } from "../Services/Interview.api.js";
 import { useContext } from "react";
 import { InterviewContext } from "../Context/Interview.context.jsx";
@@ -81,6 +82,25 @@ export const useInterview = () => {
     }
   };
 
+  const generateResumePdf = async ({interviewReportId}) =>{
+    setLoading(true)
+    let response = null
+    try {
+      response = await generateResumePdfController({interviewReportId})
+      const url = window.URL.createObjectURL(new Blob([response],{
+        type:"application/pdf"
+      }))
+      link.href = url
+      link.setAttribute =( "download",`resume_${interviewReportId}.pdf`)
+      document.body.appendChild(link)
+      link.click()
+    }catch(err){
+      console.error("Error generating PDF:", err);
+    }finally{
+      setLoading(false)
+    }
+  } 
+
   return {
     loading,
     report,
@@ -88,5 +108,6 @@ export const useInterview = () => {
     generateReport,
     getReportById,
     getReports,
+    generateResumePdf,
   };
 };

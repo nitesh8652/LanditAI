@@ -75,8 +75,14 @@ export const getAllInterviewReports = async () => {
  * @param {File} pdfFile - The PDF file to parse.
  */
 
-export const generateResumePdf = async({interviewReportId}) =>{
+export const generateResumePdf = async ({ interviewReportId }) => {
   const response = await api.post(`/resume/pdf/${interviewReportId}`);
   return response.data
 }
 
+export const generateResumePdfController = async ({ interviewId }) => {
+  const response = await api.post(`/resume/pdf/${interviewId}`, null, {
+    responseType: "blob"
+  });
+  return response.data;
+}
