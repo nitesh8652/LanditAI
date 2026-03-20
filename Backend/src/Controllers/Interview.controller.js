@@ -122,10 +122,12 @@ async function getAllInterviewReportController(req, res) {
  */
 
 async function generateResumePdfController(req, res) {
-  try {
-    const { intervewReportId } = req.params;
 
-    const interviewReport = await interviewReportModel.findById(intervewReportId);
+
+  try {
+    const { interviewReportId } = req.params;
+
+     const interviewReport = await interviewReportModel.findById(interviewReportId)
 
     if (!interviewReport) {
       return res.status(404).json({
@@ -134,7 +136,8 @@ async function generateResumePdfController(req, res) {
     }
 
     const { resume, jobDescription, selfDescription } = interviewReport;
-
+    const {intervewReportId} = req.params;
+   
     const pdfBuffer = await generateResumePdf({
       resume,
       selfDescription,
@@ -143,7 +146,7 @@ async function generateResumePdfController(req, res) {
 
     res.set({
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename=resume_${intervewReportId}.pdf`
+     "Content-Disposition": `attachment; filename=resume_${interviewReportId}.pdf`
     });
 
     res.status(200).send(pdfBuffer);

@@ -82,24 +82,24 @@ export const useInterview = () => {
     }
   };
 
-  const generateResumePdf = async ({interviewReportId}) =>{
-    setLoading(true)
-    let response = null
-    try {
-      response = await generateResumePdfController({interviewReportId})
-      const url = window.URL.createObjectURL(new Blob([response],{
-        type:"application/pdf"
-      }))
-      link.href = url
-      link.setAttribute =( "download",`resume_${interviewReportId}.pdf`)
-      document.body.appendChild(link)
-      link.click()
-    }catch(err){
-      console.error("Error generating PDF:", err);
-    }finally{
-      setLoading(false)
-    }
-  } 
+  const generateResumePdf = async ({ interviewReportId }) => {
+  setLoading(true);
+  try {
+    const response = await generateResumePdfController({ interviewReportId });
+    const url = window.URL.createObjectURL(new Blob([response], { type: "application/pdf" }));
+    const link = document.createElement("a");           // ✅ declare link
+    link.href = url;
+    link.setAttribute("download", `resume_${interviewReportId}.pdf`); // ✅ function call
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);                    // ✅ cleanup memory
+  } catch (err) {
+    console.error("Error generating PDF:", err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return {
     loading,

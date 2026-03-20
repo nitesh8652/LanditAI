@@ -129,7 +129,7 @@ async function generateResumePdf({ resume, selfDescription, jobDescription }) {
 
     const prompt = `You are an expert resume writer and ATS optimization specialist.
  
-Generate a tailored, ATS-friendly resume in clean HTML for a candidate applying to the given job description.
+                        Generate a tailored, ATS-friendly resume in clean HTML for a candidate applying to the given job description.
  
                         Resume: ${resume}
                         Self Description: ${selfDescription}
@@ -142,23 +142,23 @@ Generate a tailored, ATS-friendly resume in clean HTML for a candidate applying 
                         The resume should not be so lengthy, it should ideally be 1-2 pages long when converted to PDF. Focus on quality rather than quantity and make sure to include all the relevant information that can increase the candidate's chances of getting an interview call for the given job description.
                         
                         HTML + STYLING RULES (critical for PDF rendering via Puppeteer):
-- Use a single self-contained HTML string with ALL styles inlined in a <style> tag in <head>
-- Use system-safe fonts: font-family: 'Arial', 'Helvetica', sans-serif
-- Page layout: max-width 750px, margin: 0 auto, padding: 32px 40px
-- Background: white (#ffffff), Text: #1a1a1a
-- Section headers: font-size 13px, font-weight bold, UPPERCASE, color #1a1a1a, border-bottom: 1.5px solid #1a1a1a, margin-bottom 6px, padding-bottom 2px
-- Candidate name: font-size 22px, font-weight bold, text-align center, margin-bottom 4px
-- Contact line: font-size 10px, text-align center, color #444, margin-bottom 16px
-- Body text: font-size 10.5px, line-height 1.5, color #1a1a1a
-- Bullet points: use <ul> with margin-left 16px, list-style disc, padding 0
-- Each section: margin-bottom 14px
-- Job/Project title row: display flex, justify-content space-between, align-items baseline
-- Title text: font-weight 600, font-size 11px
-- Date ranges: font-size 10px, color #555, white-space nowrap
-- NO colors other than black/dark-gray — pure ATS-safe monochrome
-- NO tables, NO multi-column layouts — single column only for ATS parsing
-- NO icons, NO images, NO decorative borders except section underlines
-- Use only: <html>, <head>, <style>, <body>, <p>, <ul>, <li>, <h1>, <h2>, <h3>, <div>, <span>
+                            - Use a single self-contained HTML string with ALL styles inlined in a <style> tag in <head>
+                            - Use system-safe fonts: font-family: 'Arial', 'Helvetica', sans-serif
+                            - Page layout: max-width 750px, margin: 0 auto, padding: 32px 40px
+                            - Background: white (#ffffff), Text: #1a1a1a
+                            - Section headers: font-size 13px, font-weight bold, UPPERCASE, color #1a1a1a, border-bottom: 1.5px solid #1a1a1a, margin-bottom 6px, padding-bottom 2px
+                            - Candidate name: font-size 22px, font-weight bold, text-align center, margin-bottom 4px
+                            - Contact line: font-size 10px, text-align center, color #444, margin-bottom 16px
+                            - Body text: font-size 10.5px, line-height 1.5, color #1a1a1a
+                            - Bullet points: use <ul> with margin-left 16px, list-style disc, padding 0
+                            - Each section: margin-bottom 14px
+                            - Job/Project title row: display flex, justify-content space-between, align-items baseline
+                            - Title text: font-weight 600, font-size 11px
+                            - Date ranges: font-size 10px, color #555, white-space nowrap
+                            - NO colors other than black/dark-gray — pure ATS-safe monochrome
+                            - NO tables, NO multi-column layouts — single column only for ATS parsing
+                            - NO icons, NO images, NO decorative borders except section underlines
+                            - Use only: <html>, <head>, <style>, <body>, <p>, <ul>, <li>, <h1>, <h2>, <h3>, <div>, <span>
                         
                         `;
 

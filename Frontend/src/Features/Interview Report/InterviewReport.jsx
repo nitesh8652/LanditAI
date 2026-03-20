@@ -5,6 +5,7 @@ import PageBackground from "@/Features/Components/Ui/PageBackground";
 import Footer from "@/Features/Components/Ui/Footer";
 import { useInterview } from "@/Features/Hooks/useInterview";
 import Loader from "@/Features/Components/Ui/Loader";
+import { AntennaIcon, SpaceIcon, SparklesIcon } from "lucide-react";
 
 /* ─────────────────────────────────────────
    ICONS (inline SVG helpers)
@@ -229,7 +230,7 @@ export default function InterviewReport() {
 
   // ✅ Fixed: get interviewId from URL params so we can fetch on page refresh
   const { interviewId } = useParams();
-  const { report, loading, getReportById } = useInterview();
+  const { report, loading, getReportById, generateResumePdf } = useInterview();
 
   // ✅ Fixed: if report is null (page refresh / direct URL visit), fetch it by ID
   useEffect(() => {
@@ -431,6 +432,31 @@ export default function InterviewReport() {
           </motion.aside>
         </div>
       </div>
+
+      
+
+ <motion.button
+        onClick={()=>generateResumePdf(interviewId)  } 
+
+        disabled={loading}
+        className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium mx-auto mt-6"
+        style={{
+          backgroundColor: "#EC4E02",
+          color: "#f5f0e8",
+          fontFamily: "'DM Sans', sans-serif",
+          border: "none",
+          cursor: loading ? "not-allowed" : "pointer",
+          opacity: loading ? 0.7 : 1,
+        }}
+        whileHover={!loading ? { backgroundColor: "#d44302", y: -1 } : {}}
+        whileTap={!loading ? { scale: 0.97 } : {}}
+        transition={{ duration: 0.15 }}
+      >
+        <SparklesIcon/>
+        {loading ? "Generating..." : "Generate Your AI Tailoured Resume"}
+      </motion.button>
+
+
       <Footer />
     </div>
   );
