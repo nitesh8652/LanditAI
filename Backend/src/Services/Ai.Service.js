@@ -159,7 +159,6 @@ async function generateResumePdf({ resume, selfDescription, jobDescription }) {
                             - NO tables, NO multi-column layouts — single column only for ATS parsing
                             - NO icons, NO images, NO decorative borders except section underlines
                             - Use only: <html>, <head>, <style>, <body>, <p>, <ul>, <li>, <h1>, <h2>, <h3>, <div>, <span>
-                        
                         `;
 
     const response = await ai.models.generateContent({

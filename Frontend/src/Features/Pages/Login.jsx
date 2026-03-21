@@ -341,9 +341,15 @@ export default function LoginPage() {
               Landit<span style={{ color: "#EC4E02" }}>.AI</span>
             </span>
           </a>
-          <a href="/" style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 18px", borderRadius: 999, border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)", color: "rgba(245,240,232,0.7)", textDecoration: "none", fontSize: "0.82rem", fontWeight: 500 }}>
-            ← Back to Home
+          <a
+            href="/"
+            style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 18px", borderRadius: 999, border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)", color: "rgba(245,240,232,0.7)", textDecoration: "none", fontSize: "0.82rem", fontWeight: 500 }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.08)"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
+          >
+            ← Back<span className="hidden sm:inline"> to Home</span>
           </a>
+
         </div>
       </nav>
 
@@ -385,49 +391,45 @@ export default function LoginPage() {
             </div>
 
             {/* Form — onSubmit with e.preventDefault inside handleSubmit */}
+            {/* Form */}
             <form id={activeTab === "login" ? "login-form" : "signup-form"} onSubmit={handleSubmit} noValidate>
-              <div style={{ padding: "24px" }} />
+              <div style={{ padding: "24px" }}>   {/* ← opening tag, NOT self-closing */}
 
-              {/* General error */}
-              {errors.general && (
-                <div style={{ background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.3)", borderRadius: 10, padding: "10px 14px", marginBottom: 16, fontSize: "0.8rem", color: "#fca5a5" }}>
-                  {errors.general}
-                </div>
-              )}
-
-              {/* Success message */}
-              {successMsg && (
-                <div style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 10, padding: "10px 14px", marginBottom: 16, fontSize: "0.8rem", color: "#86efac" }}>
-                  {successMsg}
-                </div>
-              )}
-
-              {/* Social buttons */}
-              <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
-                <button type="button" className="social-btn">
-                  <Github size={15} /> GitHub
-                </button>
-                <button
-                  type="button"
-                  className="social-btn"
-                  onClick={handleGoogleLogin}
-                  disabled={loading}
-                  style={{ opacity: loading ? 0.6 : 1 }}
-                >
-                  <Chrome size={15} /> Google
-                </button>
-
-                {googleError && (
-                  <div style={{
-                    background: "rgba(220,38,38,0.1)",
-                    border: "1px solid rgba(220,38,38,0.3)",
-                    borderRadius: 10, padding: "8px 14px",
-                    marginBottom: 12, fontSize: "0.8rem", color: "#fca5a5"
-                  }}>
-                    {googleError}
-
+                {/* General error */}
+                {errors.general && (
+                  <div style={{ background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.3)", borderRadius: 10, padding: "10px 14px", marginBottom: 16, fontSize: "0.8rem", color: "#fca5a5" }}>
+                    {errors.general}
                   </div>
+                )}
 
+                {/* Success message */}
+                {successMsg && (
+                  <div style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 10, padding: "10px 14px", marginBottom: 16, fontSize: "0.8rem", color: "#86efac" }}>
+                    {successMsg}
+                  </div>
+                )}
+
+                {/* Social buttons — their own closed div */}
+                <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+                  <button type="button" className="social-btn">
+                    <Github size={15} /> GitHub
+                  </button>
+                  <button
+                    type="button"
+                    className="social-btn"
+                    onClick={handleGoogleLogin}
+                    disabled={loading}
+                    style={{ opacity: loading ? 0.6 : 1 }}
+                  >
+                    <Chrome size={15} /> Google
+                  </button>
+                </div>   {/* ← social buttons div closes HERE */}
+
+                {/* Google error lives OUTSIDE the social flex row */}
+                {googleError && (
+                  <div style={{ background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.3)", borderRadius: 10, padding: "8px 14px", marginBottom: 12, fontSize: "0.8rem", color: "#fca5a5" }}>
+                    {googleError}
+                  </div>
                 )}
 
                 {/* Divider */}
@@ -440,56 +442,37 @@ export default function LoginPage() {
                 {/* Fields */}
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
 
-                  {/* ── Name (signup only) ── */}
+                  {/* Name (signup only) */}
                   {activeTab === "signup" && (
                     <div>
-                      {/* htmlFor links label to input by matching id */}
                       <label htmlFor="name" style={{ display: "block", fontSize: "0.78rem", fontWeight: 500, color: "rgba(245,240,232,0.6)", marginBottom: 6, letterSpacing: "0.03em" }}>
                         Full Name
                       </label>
                       <div style={{ position: "relative" }}>
                         <User size={15} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "rgba(245,240,232,0.35)" }} />
-                        <input
-                          id="name"               // ← id used by handleChange & htmlFor
-                          name="name"             // ← name for form serialization
-                          type="text"
-                          autoComplete="name"
-                          placeholder="John Doe"
-                          value={formData.name}
-                          onChange={handleChange}
-                          required
-                          className="input-field"
-                          style={errors.name ? { borderColor: "rgba(220,38,38,0.5)" } : {}}
-                        />
+                        <input id="name" name="name" type="text" autoComplete="name" placeholder="John Doe"
+                          value={formData.name} onChange={handleChange} required className="input-field"
+                          style={errors.name ? { borderColor: "rgba(220,38,38,0.5)" } : {}} />
                       </div>
                       {errors.name && <p style={{ marginTop: 4, fontSize: "0.72rem", color: "#fca5a5" }}>{errors.name}</p>}
                     </div>
                   )}
 
-                  {/* ── Email ── */}
+                  {/* Email */}
                   <div>
                     <label htmlFor="email" style={{ display: "block", fontSize: "0.78rem", fontWeight: 500, color: "rgba(245,240,232,0.6)", marginBottom: 6, letterSpacing: "0.03em" }}>
                       Email Address
                     </label>
                     <div style={{ position: "relative" }}>
                       <Mail size={15} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "rgba(245,240,232,0.35)" }} />
-                      <input
-                        id="email"               // ← id
-                        name="email"
-                        type="email"             // ← correct input type
-                        autoComplete="email"
-                        placeholder="you@example.com"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        className="input-field"
-                        style={errors.email ? { borderColor: "rgba(220,38,38,0.5)" } : {}}
-                      />
+                      <input id="email" name="email" type="email" autoComplete="email" placeholder="you@example.com"
+                        value={formData.email} onChange={handleChange} required className="input-field"
+                        style={errors.email ? { borderColor: "rgba(220,38,38,0.5)" } : {}} />
                     </div>
                     {errors.email && <p style={{ marginTop: 4, fontSize: "0.72rem", color: "#fca5a5" }}>{errors.email}</p>}
                   </div>
 
-                  {/* ── Password ── */}
+                  {/* Password */}
                   <div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                       <label htmlFor="password" style={{ fontSize: "0.78rem", fontWeight: 500, color: "rgba(245,240,232,0.6)", letterSpacing: "0.03em" }}>
@@ -501,58 +484,37 @@ export default function LoginPage() {
                     </div>
                     <div style={{ position: "relative" }}>
                       <Lock size={15} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "rgba(245,240,232,0.35)" }} />
-                      <input
-                        id="password"            // ← id
-                        name="password"
-                        type={showPassword ? "text" : "password"}  // ← toggles between text/password
+                      <input id="password" name="password" type={showPassword ? "text" : "password"}
                         autoComplete={activeTab === "login" ? "current-password" : "new-password"}
-                        placeholder="••••••••"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
-                        minLength={6}
-                        className="input-field"
-                        style={{ paddingRight: 40, ...(errors.password ? { borderColor: "rgba(220,38,38,0.5)" } : {}) }}
-                      />
-                      <button
-                        type="button"            // ← type="button" prevents form submission
-                        aria-label={showPassword ? "Hide password" : "Show password"}
+                        placeholder="••••••••" value={formData.password} onChange={handleChange}
+                        required minLength={6} className="input-field"
+                        style={{ paddingRight: 40, ...(errors.password ? { borderColor: "rgba(220,38,38,0.5)" } : {}) }} />
+                      <button type="button" aria-label={showPassword ? "Hide password" : "Show password"}
                         onClick={() => setShowPassword(!showPassword)}
-                        style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "transparent", border: "none", color: "rgba(245,240,232,0.4)", cursor: "pointer", padding: 4 }}
-                      >
+                        style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "transparent", border: "none", color: "rgba(245,240,232,0.4)", cursor: "pointer", padding: 4 }}>
                         {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                       </button>
                     </div>
                     {errors.password && <p style={{ marginTop: 4, fontSize: "0.72rem", color: "#fca5a5" }}>{errors.password}</p>}
                   </div>
 
-                  {/* ── Remember me (login only) ── */}
+                  {/* Remember me (login only) */}
                   {activeTab === "login" && (
                     <label htmlFor="rememberMe" style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
-                      <input
-                        id="rememberMe"
-                        name="rememberMe"
-                        type="checkbox"
-                        checked={rememberMe}
+                      <input id="rememberMe" name="rememberMe" type="checkbox" checked={rememberMe}
                         onChange={(e) => setRememberMe(e.target.checked)}
-                        style={{ width: 15, height: 15, accentColor: "#EC4E02" }}
-                      />
+                        style={{ width: 15, height: 15, accentColor: "#EC4E02" }} />
                       <span style={{ fontSize: "0.8rem", color: "rgba(245,240,232,0.45)" }}>Remember me for 30 days</span>
                     </label>
                   )}
 
-                  {/* ── Terms (signup only) ── */}
+                  {/* Terms (signup only) */}
                   {activeTab === "signup" && (
                     <div>
                       <label htmlFor="agreeTerms" style={{ display: "flex", alignItems: "flex-start", gap: 8, cursor: "pointer" }}>
-                        <input
-                          id="agreeTerms"
-                          name="agreeTerms"
-                          type="checkbox"
-                          checked={agreeTerms}
+                        <input id="agreeTerms" name="agreeTerms" type="checkbox" checked={agreeTerms}
                           onChange={(e) => { setAgreeTerms(e.target.checked); setErrors((p) => ({ ...p, terms: "" })); }}
-                          style={{ width: 15, height: 15, accentColor: "#EC4E02", marginTop: 2 }}
-                        />
+                          style={{ width: 15, height: 15, accentColor: "#EC4E02", marginTop: 2 }} />
                         <span style={{ fontSize: "0.78rem", color: "rgba(245,240,232,0.4)", lineHeight: 1.5 }}>
                           I agree to the <a href="/terms" style={{ color: "#EC4E02", textDecoration: "none" }}>Terms of Service</a> and <a href="/privacy" style={{ color: "#EC4E02", textDecoration: "none" }}>Privacy Policy</a>
                         </span>
@@ -561,36 +523,30 @@ export default function LoginPage() {
                     </div>
                   )}
 
-                  {/* ── Submit button ── type="submit" triggers handleSubmit → e.preventDefault */}
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="submit-btn"
-                    style={{ opacity: isLoading ? 0.7 : 1, cursor: isLoading ? "not-allowed" : "pointer" }}
-                  >
+                  {/* Submit */}
+                  <button type="submit" disabled={isLoading} className="submit-btn"
+                    style={{ opacity: isLoading ? 0.7 : 1, cursor: isLoading ? "not-allowed" : "pointer" }}>
                     {isLoading ? "Please wait..." : activeTab === "login" ? "Sign In" : "Create Account"}
                     {!isLoading && <ArrowRight size={16} />}
                   </button>
-                </div>
+                </div>   {/* ← fields div closes */}
 
                 {/* Footer link */}
                 <p style={{ textAlign: "center", marginTop: 20, fontSize: "0.8rem", color: "rgba(245,240,232,0.38)" }}>
                   {activeTab === "login" ? "Don't have an account? " : "Already have an account? "}
-                  <button
-                    type="button"
-                    onClick={() => switchTab(activeTab === "login" ? "signup" : "login")}
-                    style={{ background: "transparent", border: "none", color: "#EC4E02", cursor: "pointer", fontSize: "0.8rem", fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}
-                  >
+                  <button type="button" onClick={() => switchTab(activeTab === "login" ? "signup" : "login")}
+                    style={{ background: "transparent", border: "none", color: "#EC4E02", cursor: "pointer", fontSize: "0.8rem", fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}>
                     {activeTab === "login" ? "Create one" : "Sign in"}
                   </button>
                 </p>
-              </div>
+
+              </div>   {/* ← padding wrapper closes */}
             </form>
           </div>
 
           {/* Bottom note */}
           <p style={{ textAlign: "center", marginTop: 20, fontSize: "0.72rem", color: "rgba(245,240,232,0.2)", letterSpacing: "0.03em" }}>
-            Protected by end-to-end encryption · Landit.AI © 2026
+             End-to-end encryption · Landit.AI © 2026
           </p>
         </div>
       </div>
