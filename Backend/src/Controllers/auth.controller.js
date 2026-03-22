@@ -80,7 +80,7 @@ async function loginUserController(req, res) {
     const user = await userModel.findOne({ email })
 
     if (!user) {
-        return res.status(400).json({
+        return res.status(404).json({
             message: "Invalid email or password"
         })
     }
@@ -165,65 +165,66 @@ async function verifyController(req, res) {
  */
 
 async function googleAuthController(req, res) {
-
-    try {
-        const { idToken } = req.body;
-        if (!idToken) {
-            return res.status(400).json({ message: "ID required" })
-        }
-
-        const decodedToken = await admin.auth().verifyIdToken(idToken)
-        // decodedToken contains: uid, email, name, picture (from Google)
-        const { email, name, uid } = decodedToken;
-
-        let user = await userModel.findOne({ email })
-
-        if (!user) {
-            // First time Google login → create account automatically
-            // No password needed — googleUid acts as the identity proof
-            // We hash a random string as a placeholder password so the schema
-            // required:true constraint is satisfied without a real password.
-            const placeholderhash = await bcrypt.hash(uid + process.env.JWT_SECRET, 10)
-            user = await userModel.create({
-                username: name,
-                email,
-                password: placeholderhash,
-                googleUid: uid, // Store Google UID for future reference
-            });
-
-        }
-        //issue our own jwt we dont rely on fire base for session management
-
-        const token = jwt.sign({
-            id: user._id, username: user.username
-        }, process.env.JWT_SECRET,
-            { expiresIn: "7d" })
-
-        res.cookie("token", token);
-        res.status(200).json({
-            message: "google login in successfully",
-            user: {
-                id: user._id,
-                username: user.username,
-                email: user.email
-            }
-        })
-
-    } catch (err) {
-        console.error("googleAuthController error:", err);
-        res.status(500).json({ success: false, message: "Server error." });
-
-        // Firebase throws specific errors we can surface
-        if (err.code === "auth/id-token-expired") {
-            return res.status(401).json({ message: "Google session expired. Please sign in again." });
-        }
-        if (err.code === "auth/argument-error") {
-            return res.status(400).json({ message: "Invalid ID token." });
-        }
-
-        return res.status(500).json({ message: "Failed to authenticate with Google." });
+  try {
+    const { idToken } = req.body;
+    if (!idToken) {
+      return res.status(400).json({ message: "ID token required" });
     }
 
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const { email, name, uid } = decodedToken;
+
+    // ── Try to find an existing account by email ──────────────────────────────
+    let user = await userModel.findOne({ email });
+
+    if (!user) {
+      // ── New Google user → create account ─────────────────────────────────
+      // Make username unique: if "Nitesh Salian" is taken, try "Nitesh Salian_ab12"
+      let username = name;
+      const usernameExists = await userModel.findOne({ username });
+      if (usernameExists) {
+        username = `${name}_${uid.slice(0, 6)}`;   // e.g. "Nitesh Salian_xK92mP"
+      }
+
+      const placeholderHash = await bcrypt.hash(uid + process.env.JWT_SECRET, 10);
+      user = await userModel.create({
+        username,
+        email,
+        password: placeholderHash,
+        googleUid: uid,
+      });
+    }
+
+    // ── Issue our own JWT (same flow as regular login) ────────────────────────
+    const token = jwt.sign(
+      { id: user._id, username: user.username },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.cookie("token", token);
+    return res.status(200).json({
+      message: "Google login successful",
+      user: {
+        id:       user._id,
+        username: user.username,
+        email:    user.email,
+      },
+    });
+
+  } catch (err) {
+    console.error("googleAuthController error:", err);
+
+    // ── Surface Firebase-specific errors before the generic 500 ──────────────
+    if (err.code === "auth/id-token-expired") {
+      return res.status(401).json({ message: "Google session expired. Please sign in again." });
+    }
+    if (err.code === "auth/argument-error") {
+      return res.status(400).json({ message: "Invalid ID token." });
+    }
+
+    return res.status(500).json({ message: "Failed to authenticate with Google." });
+  }
 }
 
 

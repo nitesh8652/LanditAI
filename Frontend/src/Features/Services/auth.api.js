@@ -31,20 +31,17 @@ export async function register({ username, email, password }) {
 }
 
 export async function login({ email, password }) {
-
-    try {
-        const response = await api.post("/login", {
-            email,
-            password,
-        });
-        return response.data;
-    }
-    catch (err) {
-        console.log(err)
-    }
-
+  try {
+    const response = await api.post("/login", { email, password });
+    return response.data;
+  } catch (err) {
+    const message = err.response?.data?.message || "Login failed. Please try again.";
+    const code    = err.response?.data?.code    || "UNKNOWN";
+    const error   = new Error(message);
+    error.code    = code;
+    throw error;
+  }
 }
-
 export async function logout() {
 
     try {
