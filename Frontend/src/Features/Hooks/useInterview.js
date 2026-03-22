@@ -2,7 +2,7 @@ import {
   generateInterviewReport,
   getInterviewReportById,
   getAllInterviewReports,
-  generateResumePdf,  // was generateResumePdfController
+  generateResumePdf as generateResumePdfApi,
 } from "../Services/Interview.api.js";
 import { useContext } from "react";
 import { InterviewContext } from "../Context/Interview.context.jsx";
@@ -13,7 +13,6 @@ export const useInterview = () => {
     throw new Error("useInterview must be used within an InterviewProvider");
   }
 
-  // ✅ Fixed: was destructuring `user, setUser` which don't exist in InterviewContext.
   //    InterviewContext provides: loading, setLoading, report, setReport, reports, setReports
   const { loading, setLoading, report, setReport, reports, setReports } = context;
 
@@ -78,24 +77,25 @@ export const useInterview = () => {
     }
   };
 
-  const generateResumePdf = async ({ interviewReportId }) => {
+const generateResumePdf = async ({ interviewReportId }) => {
   setLoading(true);
   try {
-    const response = await generateResumePdfController({ interviewReportId });
+    const response = await generateResumePdfApi({ interviewReportId }); // ← use renamed import
     const url = window.URL.createObjectURL(new Blob([response], { type: "application/pdf" }));
-    const link = document.createElement("a");           // ✅ declare link
+    const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `resume_${interviewReportId}.pdf`); // ✅ function call
+    link.setAttribute("download", `resume_${interviewReportId}.pdf`);
     document.body.appendChild(link);
     link.click();
     link.remove();
-    window.URL.revokeObjectURL(url);                    // ✅ cleanup memory
+    window.URL.revokeObjectURL(url);
   } catch (err) {
     console.error("Error generating PDF:", err);
   } finally {
     setLoading(false);
   }
 };
+
 
   return {
     loading,
