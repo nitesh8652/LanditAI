@@ -61,8 +61,8 @@ const skillGaps = new mongoose.Schema({
 })
 
 const PreparationPlan = new mongoose.Schema({
-    day: {
-        type: Number,
+    period: {
+        type: String,
         required: [true, "Day is required"]
     },
     focus: {

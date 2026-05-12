@@ -66,7 +66,7 @@ const interviewReportSchema = {
             items: {
                 type: Type.OBJECT,
                 properties: {
-                    day: { type: Type.NUMBER, description: "Day number starting from 1" },
+                    period: { type: Type.STRING, description: "Realistic time period for this focus area, e.g. 'Week 1', 'Weeks 2–3', 'Month 1', 'Months 2–4'. Scale by topic complexity — HTML/CSS may be 1–2 weeks; DSA may be 2–4 months. Never use single days." },
                     focus: { type: Type.STRING, description: "Main focus of this day, e.g. System Design, DSA" },
                     tasks: {
                         type: Type.ARRAY,
@@ -74,7 +74,7 @@ const interviewReportSchema = {
                         items: { type: Type.STRING }
                     }
                 },
-                required: ["day", "focus", "tasks"]
+                required: ["period", "focus", "tasks"]
             }
         }
     },
@@ -85,9 +85,13 @@ const interviewReportSchema = {
 async function generateInterviewReport({ resume, selfDescription, jobDescription }) {
 
     const prompt = `Generate an interview report for the candidate with the following details:
-                        Resume: ${resume}
-                        Self Description: ${selfDescription}
-                        Job Description: ${jobDescription}`
+    Resume: ${resume}
+    Self Description: ${selfDescription}
+    Job Description: ${jobDescription}
+    
+    For the preparationPlan, use realistic time periods (weeks or months, not days). 
+    Example: "Week 1", "Weeks 2–3", "Month 2", "Months 3–5". 
+    Scale to topic difficulty — CSS basics might be 1–2 weeks, DSA might be 2–3 months.`
 
     const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",

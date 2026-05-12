@@ -170,9 +170,19 @@ function QuestionCard({ item, index, isOpen, onToggle }) {
   );
 }
 
-function RoadMapCard({ day, index }) {
+function RoadMapCard({ day, index, total }) {
   const [open, setOpen] = useState(false);
-  const isLast = index === 7;
+  const isLast = index === (total ?? 8) - 1;
+
+  // Derive a short label from the period string, e.g. "Week 1" → "W1", "Month 2–4" → "M2"
+  const shortLabel = (day.period ?? "")
+    .replace(/weeks?/i, "W")
+    .replace(/months?/i, "M")
+    .replace(/days?/i, "D")
+    .replace(/\s+/g, "")
+    .slice(0, 4);
+
+  
   return (
     <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.06, duration: 0.4 }} className="flex gap-4">
       <div className="flex flex-col items-center" style={{ width: 32, flexShrink: 0 }}>
@@ -183,7 +193,7 @@ function RoadMapCard({ day, index }) {
           display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
           transition: "all 0.25s", boxShadow: open ? "0 0 12px rgba(236,78,2,0.25)" : "none",
         }}>
-          <span style={{ fontSize: 11, fontWeight: 700, color: open ? "#EC4E02" : "rgba(245,240,232,0.4)", fontFamily: "'DM Sans', sans-serif" }}>{day.day}</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: open ? "#EC4E02" : "rgba(245,240,232,0.4)", fontFamily: "'DM Sans', sans-serif" }}>{shortLabel}</span>
         </div>
         {!isLast && <div style={{ flex: 1, width: 1.5, marginTop: 4, background: "rgba(245,240,232,0.07)", minHeight: 16 }} />}
       </div>
@@ -195,7 +205,7 @@ function RoadMapCard({ day, index }) {
       }}>
         <button onClick={() => setOpen(!open)} className="w-full text-left flex items-center justify-between p-3.5 gap-3" style={{ background: "none", cursor: "pointer" }}>
           <div>
-            <p style={{ fontSize: 10, color: "rgba(236,78,2,0.7)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, marginBottom: 2 }}>Day {day.day}</p>
+            <p style={{ fontSize: 10, color: "rgba(236,78,2,0.7)", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, marginBottom: 2 }}>{day.period}</p>
             <p style={{ fontSize: 13, fontWeight: 500, color: open ? "#f5f0e8" : "rgba(245,240,232,0.75)", fontFamily: "'DM Sans', sans-serif", transition: "color 0.2s" }}>{day.focus}</p>
           </div>
           <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.25 }} style={{ color: open ? "#EC4E02" : "rgba(245,240,232,0.25)", flexShrink: 0 }}>
@@ -348,7 +358,7 @@ export default function InterviewReport() {
                     <QuestionCard key={i} item={item} index={i} isOpen={openQuestion === i} onToggle={() => setOpenQuestion(openQuestion === i ? null : i)} />
                   ))}
                   {activeTab === "roadmap" && report.preparationPlan?.map((day, i) => (
-                    <RoadMapCard key={day.day} day={day} index={i} />
+                    <RoadMapCard key={i} day={day} index={i} total={report.preparationPlan.length} />
                   ))}
                 </motion.div>
               </AnimatePresence>
